@@ -24,15 +24,23 @@ ASSEMBLE HEX
 
 \ PART 0: Boot vectors.
 ORIGIN ORG
- JP $4F A;
+ JP $45 A;
  5 ALLOT-T
  RST .LIL 8 RET A; \ RST 8 handler
  5 ALLOT-T
  RST .LIL 010 RET A; \ RST 16 handler
- 2D ALLOT-T
+ 5 ALLOT-T
+ RST .LIL 018 RET A;
+ 5 ALLOT-T
+ RST .LIL 020 RET A;
+ 5 ALLOT-T
+ RST .LIL 028 RET A;
+ 5 ALLOT-T
+ RST .LIL 030 RET A;
+ 5 ALLOT-T
+ JR $45 A; \ RST @ 38 turn absolute to relative
  4D C, 4F C, 53 C, 0 C, 0 C, \ Agon MOS header at 64
- 46 C, 4F C, 52 C, 54 C, 48 C, 2E C, 42 C, 49 C, 4E C, 0 C, \ FORTH.BIN
-\ Here we jump to at start (is at $4F).
+\ Here we jump to at start (is at $45).
  PUSH .LIL IY
  PUSH .LIL IX
  PUSH .LIL BC

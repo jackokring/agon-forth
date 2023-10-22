@@ -544,9 +544,10 @@ CODE COLD ( --- )
     \G This is altered to allow mos loading at $B0000
     LD SP, $7F00
     LD S0ADDR (), SP
-    LD IX, $7FF0
+    \G Keep cold start address and use extra space
+    LD IX, $8000
     LD R0ADDR (), IX
-    LD DE, $7FFF
+    LD DE, $FFFF
     LD COLDSTARTADDR (), DE
     LD DE, CURFILEADDR
     BEGIN

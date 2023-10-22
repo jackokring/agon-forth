@@ -340,28 +340,7 @@ DEFINITIONS
 \G Go to the specified directory.    
   BL WORD COUNT OSSTRING >ASCIIZ OSSTRING 0 0 3 OSCALL -40 ?THROW ;
 
-: SYSTEM ( c-addr u ---)
-\G Execute the specified system command.    
-  CR OSSTRING >ASCIIZ OSSTRING 0 0 16 OSCALL -39 ?THROW ;  
-
-: EDIT-FILE ( c-addr u lineno --- )
-\G Invoke the system editor on the file whose name is specified by c-addr u
-\G at the specified line number.    
-    >R
-    S" nano " OSSTRING >ASCIIZ \ put the editor name in the string buffer.
-    OSSTRING ASCIIZ> + >ASCIIZ \ put the file name in the string buffer.
-    S"  &90000 " OSSTRING ASCIIZ> + >ASCIIZ
-    \ put additional editor parameter in string buffer (buffer address).
-    R> 0 BASE @ >R DECIMAL <# #S #> OSSTRING ASCIIZ> + >ASCIIZ
-    R> BASE ! \ Add line number to OS string.
-    OSSTRING 0 0 16 OSCALL -39 ?THROW
-    0 SYSVARS 5. D+ XC!
-;
-
-: ED ( --- )
-\G Invoke the editor on the current file (selected with OPEN)   
-    CURFILENAME C@ 0= -38 ?THROW
-    CURFILENAME ASCIIZ> 1 EDIT-FILE ;
+\ removed SYSTEM and ED due to overlay fof
     
 : SAVE-SYSTEM ( "ccc"  --- )
 \G Save the current FORTH system to the specifed file.    

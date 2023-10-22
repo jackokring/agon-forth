@@ -68,11 +68,11 @@ following command: `*BYE`
 
 At the MOS command prompt type:
 
-load fof.bin
+`load fof.bin` or `fof`
 
-Then type the command:
+Then type the command if load was used:
 
-run
+`run`
 
 Alternatively you can automatically load a Forth source file on startup. This is especially useful if you run Forth 
 in autoexec.txt. Example
@@ -488,7 +488,7 @@ I had a few loose requirements:
 * It had to be loosely ANS Forth based.
 * It had to have a prefix assembler, like F-PC.
 
-For Agon I wanted to stick with mnost features from Cerberus Z80
+For Agon I wanted to stick with most features from Cerberus Z80
 FORTH, except that I decided not to include a text editor in Forth
 itself. A buffer to hold a large source file would take up too much
 addressing space. The good news is that it is easy for Agon to run the
