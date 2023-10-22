@@ -377,6 +377,7 @@ END-CODE
 
 CODE UM* ( u1 u2 --- ud)
 \G Multiply two unsigned numbers, giving double result. 
+\G Use MUL **FIX ME**
     PUSH BC    \ store TOS
     EXX        \ Use shadow register set.
     POP BC     \ Get TOS back (operand 1)

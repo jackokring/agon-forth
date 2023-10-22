@@ -366,6 +366,19 @@ DEFINITIONS
      0 SYSVARS@ BEGIN 
       DUP 0 SYSVARS@ <> \ Wait until system time changes (50 times per second)
      UNTIL DROP LOOP  ;
+     
+\ PART 7: eZ80 related words. **FIX ME**
+
+: L@ ( daddr --- ud)
+;
+
+: L! ( daddr ud ---)
+;
+
+: LEXECUTE ( daddr ---)
+\G Long execute using SPL so must be an ADL code def and return via RET .LIL
+\G Can use PUSH .SIS and POP .SIS for stack access.
+;
 
 CAPS ON
 

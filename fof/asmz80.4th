@@ -446,6 +446,7 @@ CDC4 2  JMPINST CALL
 ;
 
 : .LIL 005B C_ ;
+: .SIS 0040 C_ ;
 
 : ENDASM \ End assembly.
   A; PREVIOUS ;
