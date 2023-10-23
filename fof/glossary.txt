@@ -179,6 +179,9 @@ Subtract 2 from the top of the stack.
 2/   n1 --- n2                                                                 
 Divide signed number n1 by 2.
 
+2>R   d --- R: d                                                               
+Place a double on the return stack.
+
 2@   a-addr --- d                                                              
 Fetch double number d at a-addr. 
 
@@ -195,6 +198,12 @@ Duplicate the top cell on the stack, but only if it is nonzero.
 2OVER   d1 d2 --- d1 d2 d1                                                     
 Take a copy of the second double number of the stack and push it on the 
 stack.
+
+2R>   R: d --- d                                                               
+Bring a double from the return stack.
+
+2R@   R: d --- d R: d                                                          
+Copy a double from the return stack.
 
 2SWAP   d1 d2 --- d2 d1                                                        
 Swap the top two double numbers on the stack.
