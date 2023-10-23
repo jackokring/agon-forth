@@ -567,7 +567,7 @@ Print character c on the screen.
 END-CODE   ---                                                                 
 Terminate a code definition
 
-END-VDU                                                                        
+END-VDU   ---                                                                  
 End a VDU definition which then has a name to use.
 
 ENDCASE   variable# ---                                                        
@@ -1098,8 +1098,8 @@ VARIABLE   "ccc" ---
 Create a variable where 1 cell can be stored. When executed it
 returns the address.
 
-VDU                                                                            
-Loop over all placed C, and , values placed before an END-VDU.
+VDU   ---                                                                      
+Loop over all placed C, and , values placed before the following END-VDU.
 
 VOC-LINK                                                                       
 Variable that links all vocabularies together, so we can link.

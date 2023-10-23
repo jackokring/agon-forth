@@ -499,12 +499,14 @@ DEFINITIONS
     
 \ PART 8: Agon related words. (@jackokring)
 
-: VDU CREATE MARKER> DOES> DUP @ SWAP 1+ DO
-\G Loop over all placed C, and , values placed before an END-VDU.
+: VDU ( ---) 
+\G Loop over all placed C, and , values placed before the following END-VDU.
+    CREATE MARKER> DOES> DUP @ SWAP 1+ DO
 	I @ EMIT LOOP ;
 	
-: END-VDU <RESOLVE ; 
+: END-VDU ( ---)
 \G End a VDU definition which then has a name to use.
+    <RESOLVE ; 
 
 CAPS ON
 
