@@ -54,6 +54,9 @@ Runtime part of ABORT" .........."
 (DO)   n1 n2 ---                                                               
 Runtime part of DO. n2 is initial counter, n1 is limit
 
+(DU/MOD)   ud --- ud' shift                                                    
+Normalize for faster division.
+
 (FILE)   "ccc" --- ud                                                          
 Makes OSSTRING filled with the name in mos format and presents it in 24 bit.
 
@@ -466,11 +469,17 @@ CURRENT   --- addr
 This variable holds the address of the word list to which new definitions
 are added.
 
+D*   ud1 ud2 --- ud1*ud2                                                       
+Double multiply.
+
 D+   d1 d2 --- d3                                                              
 Add the double numbers d1 and d2.
 
 D-   d1 d2 --- d3                                                              
 subtract double numbers d2 from d1.    
+
+D-   ud1 ud2 --- ud1-ud2                                                       
+Double subtract.
 
 D.   d ---                                                                     
 Type the double number d to the terminal.
@@ -480,6 +489,9 @@ Print double number d right-justified in a field of width n.
 
 D0=   d ---f                                                                   
 f is true if and only if d is equal to zero.    
+
+D2*   ud --- 2*ud                                                              
+Double shift left.
 
 D=   d1 d1  --- f                                                              
 f is true if and only if d1 and d2 are equal.
@@ -1006,6 +1018,12 @@ Store value C into byte offset idx in the system variables.
 SYSVARS@   idx --- c                                                           
 Read value C from byte offset idx in the system variables.    
 
+T+   ut1 ut2 --- ut1+ut2                                                       
+Triple add.
+
+T-   ut1 ut2 --- ut1-ut2                                                       
+Triple subtraction.
+
 THEN   x ---                                                                   
 End an IF THEN or IF ELSE THEN construction.
 
@@ -1023,6 +1041,12 @@ Constant -1, indicates TRUE
 
 TUCK   x1 x2 --- x2 x1 x2                                                      
 Copy the top of stack to a position under the second item.  
+
+TUM*   ut u --- ut                                                             
+Triple unsigned multiply.
+
+TUM/   ut u --- utquot                                                         
+Triple unsigned divide.
 
 TURNKEY   xt "ccc" ---                                                         
 Save the current FORTH system is a way it automatically starts xt

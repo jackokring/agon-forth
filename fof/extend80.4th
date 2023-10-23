@@ -427,6 +427,8 @@ DEFINITIONS
       DUP 0 SYSVARS@ <> \ Wait until system time changes (50 times per second)
      UNTIL DROP LOOP  ;
      
+\ PART 7: Miscellaneous words (@jackokring)
+     
 : LATER ( R: addr1 addr2 --- addr2 addr1)
 \G Delays execution of the rest of a word until after finishing the word
 \G calling the word that then called LATER.
@@ -442,8 +444,60 @@ DEFINITIONS
 \G Warning, this performs a WARM start to reinitialise the stacks if sucessful.
 	MB@ $OB = IF EXIT THEN
     $0000 RP0 ! $FF00 SP0 ! WARM ;
+
+: D- ( ud1 ud2 --- ud1-ud2)
+\G Double subtract.
+    DNEGATE D+ ;
     
-\ PART 7: Agon related words. (@jackokring)
+: D* ( ud1 ud2 --- ud1*ud2)
+\G Double multiply.
+    >R SWAP >R 2DUP UM* 2SWAP
+    R> * SWAP R> * + + ;
+
+: TUM* ( ut u --- ut)
+\G Triple unsigned multiply.
+    2>R R@ UM* 0 2R> UM* D+ ;
+
+: TUM/ ( ut u --- utquot)
+\G Triple unsigned divide.
+    DUP >R UM/MOD R> SWAP >R UM/MOD NIP R> ;
+
+: T+ ( ut1 ut2 --- ut1+ut2)
+\G Triple add.
+    >R ROT >R >R SWAP >R 0 TUCK D+ 0 R> R> 0 TUCK D+ D+ R> R> + + ;
+: T- ( ut1 ut2 --- ut1-ut2)
+\G Triple subtraction.
+    >R ROT >R >R SWAP >R 0 TUCK D- S>D R> R> 0 TUCK D- D+ R> R> - + ;
+    
+: D2* ( ud --- 2*ud)
+\G Double shift left.
+    2DUP D+ ;
+
+: (DU/MOD) ( ud --- ud' shift)
+\G Normalize for faster division.
+    0 >R
+    BEGIN
+        DUP 0< NOT
+    WHILE
+        D2* R> 1+ >R
+    REPEAT R> ;
+
+: DU/MOD ( ud ud --- udrem udquot)
+    ?DUP 0= IF
+        MU/MOD 2>R 0 2R> EXIT
+    THEN (DU/MOD) DUP >R ROT ROT 2>R
+    1 SWAP LSHIFT TUM*
+    DUP R@ = IF -1 ELSE 2DUP R@ UM/MOD NIP THEN
+    2R@ ROT DUP >R TUM* T-
+    DUP 0< IF
+        R> 1- 2R@ ROT >R 0 T+
+        DUP 0< IF
+            R> 1- 2R@ ROT >R 0 T+
+        THEN
+    THEN
+    R> 2R> 2DROP 1 R> ROT >R LSHIFT TUM/ R> 0 ;   
+    
+\ PART 8: Agon related words. (@jackokring)
 
 : VDU CREATE MARKER> DOES> DUP @ SWAP 1+ DO
 \G Loop over all placed C, and , values placed before an END-VDU.
