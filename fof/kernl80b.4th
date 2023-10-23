@@ -389,8 +389,8 @@ CODE KEY? ( --- f)
 END-CODE
 
 CODE MB@ ( --- u)
-\G Current value of MB register
-    A; $ED C, $6E C, \ LD A, MB
+\G Current value of MB register.
+    LD A, MB
     PUSH DE
     LD E, A
     LD D, $0
@@ -575,8 +575,8 @@ LABEL CURFILEADDR ENDASM
   DUP 80 0 SCAN DROP OVER - 
 ;
     
-: OPEN ( --- )
-\G Load a file into the source file buffer.    
+: OPEN ( "ccc" --- )
+\G Make the specified file the current file.   
  BL WORD COUNT CURFILENAME >ASCIIZ ;
 
 01 
@@ -650,6 +650,18 @@ VARIABLE FID
     THEN    
 ;
 
+: NAME ( "ccc" --- addr len)
+\G Make a name.
+    BL WORD COUNT ;
+    
+: OSNAME ( addr len --- daddr)
+\G Makes an OS string from a name.
+    OSSTRING >ASCIIZ OSSTRING MB@ ;
+
+: (FILE) ( "ccc" --- ud)
+\G Makes OSSTRING filled with the name in mos format and presents it in 24 bit.
+    NAME OSNAME ;
+
 : WRITE-LINE  ( c-addr u fid --- ior)
 \G Write the string at addr c-addr with length u to the file described by
 \G fid. Append the end of line character to it.
@@ -665,8 +677,7 @@ VARIABLE FID
 \G Open the file with the name starting at c-addr and with length u.
 \G File must already exist unless open mode is write only.
 \G Return the file-ID and the IO result. (ior=0 if success)
-    >R OSSTRING >ASCIIZ 
-    OSSTRING MB@ 0. R> 0 $A DOSCALL DUP 0= ;
+    >R OSNAME 0. R> 0 $A DOSCALL DUP 0= ;
 
 : CREATE-FILE ( c-addr u mode --- fid ior)
 \G Create a new file with the name starting at c-addr with length u. 
@@ -676,6 +687,10 @@ VARIABLE FID
 : CLOSE-FILE ( fid --- ior)
 \G Close the open file described by fid.
   04TUCK 0 $B DOSCALL DROP 0 ;
+  
+: DELETE-FILE ( c-addr u --- ior)
+\G Delete the file whose name is specified by c-addr u.   
+  OSNAME 0. 0. 5 DOSCALL ;
 
 \ PART 11: INTERPRETER HELPER WORDS
 

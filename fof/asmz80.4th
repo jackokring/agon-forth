@@ -387,6 +387,7 @@ CDC4 2  JMPINST CALL
 \ $06xx I and R registers.
 0600 DST-REG I,  0600 SRC-REG I
 0601 DST-REG R,  0601 SRC-REG R
+0801 DST-REG MB, 0801 SRC-REG MB
 \ $04xx direct addressing 
 : (), 0400 DSTREG ! 2 ?OPERAND ! ; \ Direct addressing LD addr (), HL
 : ()  0400 SRCREG ! 2 ?OPERAND ! ; \ Direct addressing LD A, addr ()

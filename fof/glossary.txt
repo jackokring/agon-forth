@@ -37,7 +37,7 @@ Comment till next ).
 Runtime part of +LOOP    
 
 (.")   ---                                                                     
-Runtime part of ."
+Runtime part of ." .........."
 
 (;CODE)   ---                                                                  
 Runtime for DOES>, exit calling definition and make last defined word
@@ -49,16 +49,22 @@ The next cell contains a branch address to skip the
 loop when limit and start are equal.
 
 (ABORT")   f -- -                                                              
-Runtime part of ABORT"
+Runtime part of ABORT" .........."
 
 (DO)   n1 n2 ---                                                               
 Runtime part of DO. n2 is initial counter, n1 is limit
+
+(FILE)   "ccc" --- ud                                                          
+Makes OSSTRING filled with the name in mos format and presents it in 24 bit.
 
 (FIND)   c-addr u nfa  --- cfa/word f                                          
 find the string at c-addr, length u in the dictionary starting at nfa.
 Search in a single hash chain. Return the cfa of the found word. If
 If the word is not found, return the string addres instead. Flag values:
 0 for not found, 1 for immediate word, -1 for normal word.   
+
+(FORGET)   xt ---                                                              
+Forget the word indicated by xt and everything defined after it. 
 
 (LEAVE)   ---                                                                  
 Runtime of LEAVE
@@ -70,7 +76,7 @@ Runtime part of LOOP
 Runtime for POSTPONE.
 
 (S")   --- c-addr u                                                            
-Runtime part of S"
+Runtime part of S" .........."
 
 *   w1 w2 --- w3                                                               
 Multiply single numbers, signed or unsigned give the same result.
@@ -127,6 +133,12 @@ n3 is n1 divided by n2.
 
 /MOD   n1 n2 --- nrem nquot                                                    
 Divide signed number n1 by n2, giving quotient and remainder.
+
+0                                                                              
+Used in [IF] [ELSE] [THEN] for conditional compilation.    
+
+04TUCK   n --- 0 0 0 0 n                                                       
+Makes 2 double literal zeros tucked on the stack.
 
 0<   n --- f                                                                   
 f is true if and only if n is less than 0.
@@ -336,8 +348,8 @@ BRANCH   ---
 High-level unconditional jump, loads IP from next cell in instruction
 thread
 
-BSAVE   addr len "ccc" ---                                                     
-Save memory at address addr, length len bytes to a file
+BSAVE   daddr dlen "ccc" ---                                                   
+Save memory at address daddr, length dlen bytes to a file
 filename is the next word parsed.       
 
 BYE   ---                                                                      
@@ -488,6 +500,9 @@ Set the definitions wordlist to the last wordlist in the search order.
 DELETE   "ccc"  --                                                             
 Delete the specified file.    
 
+DELETE-FILE   c-addr u --- ior                                                 
+Delete the file whose name is specified by c-addr u.   
+
 DEPTH   --- n                                                                  
 n is the number of cells on the stack (before DEPTH was executed).
 
@@ -511,6 +526,10 @@ Word that contains DOES> will change the behavior of the last created
 word such that it pushes its parameter field address onto the stack
 and then executes whatever comes after DOES>
 
+DOSCALL   dHL dDE dBC func --- res                                             
+Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
+Return the return code as in the A register.
+
 DP   --- a-addr                                                                
 Variable that contains the dictionary pointer. New space is allocated
 from the address in DP
@@ -527,13 +546,6 @@ Show a hex/ascii dump of the memory block of len bytes at addr
 DUP   x --- x x                                                                
 Duplicate the top cell on the stack.    
 
-ED   ---                                                                       
-Invoke the editor on the current file (selected with OPEN)   
-
-EDIT-FILE   c-addr u lineno ---                                                
-Invoke the system editor on the file whose name is specified by c-addr u
-at the specified line number.    
-
 ELSE   x1 --- x2                                                               
 part of IF ELSE THEN construction.
 
@@ -543,17 +555,23 @@ Print character c on the screen.
 END-CODE   ---                                                                 
 Terminate a code definition
 
+END-VDU                                                                        
+End a VDU definition which then has a name to use.
+
 ENDCASE   variable# ---                                                        
 Terminate a CASE..ENDCASE construct.     
 
 ENDOF   x1 --- x2                                                              
 Terminate an OF..ENDOF block.    
 
+ENVIRONMENT?   c-addr u --- false | val true                                   
+Return an environmental query of the string c-addr u    
+
 ERASE   c-addr u                                                               
 Fill memory region of u bytes starting at c-addr with zero.    
 
 ERROR$   --- a-addr                                                            
-Variable containing string address of ABORT" message.
+Variable containing string address of ABORT" message."
 
 ERROR-SOURCE   ---                                                             
 Print location of error source.
@@ -608,6 +626,14 @@ REplace the last wordlist in the search order with FORTH-WORDLIST
 
 FPUTC   c fid ---                                                              
 Put a single character into a file.
+
+FREE   --- u                                                                   
+Return estimated free space
+
+FREEMAX   ---                                                                  
+Frees the maximum space if possible. By default 32kB is used. This can be
+increased if fof is loaded low by load fof.bin but is not done by default.
+Warning, this performs a WARM start to reinitialise the stacks if sucessful.
 
 GET-ORDER   --- w1 w2 ... wn n                                                 
 Return all wordlists in the search order, followed by the count.
@@ -689,6 +715,10 @@ Check if a key is pressed. Return a flag
 LAST   --- addr                                                                
 This variable holds a pointer to the last definition created.
 
+LATER   R: addr1 addr2 --- addr2 addr1                                         
+Delays execution of the rest of a word until after finishing the word
+calling the word that then called LATER.
+
 LEAVE   ---                                                                    
 Runtime: leave the matching DO LOOP immediately.
 
@@ -711,8 +741,15 @@ Shift x1 left by u bits, zeros are added to the right.
 M*   n1 n2 --- d                                                               
 Multiply the signed numbers n1 and n2, giving the signed double number d.
 
+MARKER   "ccc" --                                                              
+Create a word that when executeed forgets itself and everything defined
+after it.
+
 MAX   n1 n2 --- n3                                                             
 n3 is the maximum of n1 and n2.
+
+MB@   --- u                                                                    
+Current value of MB register.
 
 MESS"   n "cccq" ---                                                           
 Create an error message for throw code n.
@@ -733,6 +770,9 @@ Delay for n milliseconds.
 MU/MOD   ud u --- urem udquot                                                  
 Divide unsigned double number ud by u and return a double quotient and
 a single remainder.
+
+NAME   "ccc" --- addr len                                                      
+Make a name.
 
 NAME>   addr1 --- addr2                                                        
 Convert address of name to address of code.
@@ -765,8 +805,8 @@ Store TRUE at a-addr.
 ONLY   ---                                                                     
 Set the search order to the minimal wordlist.
 
-OPEN   ---                                                                     
-Load a file into the source file buffer.    
+OPEN   "ccc" ---                                                               
+Make the specified file the current file.   
 
 OPEN-FILE   c-addr u mode --- fid ior                                          
 Open the file with the name starting at c-addr and with length u.
@@ -776,9 +816,8 @@ Return the file-ID and the IO result. (ior=0 if success)
 OR   x1 x2 ---x3                                                               
 Bitwise or of the top two cells on the stack. 
 
-OSCALL   HL DE BC func --- res                                                 
-Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
-Return the return code as in the A register.
+OSNAME   addr len --- daddr                                                    
+Makes an OS string from a name.
 
 OSSTRING   --- addr                                                            
 Buffer to store file names, command lines, zero terminated for OS calls.
@@ -958,17 +997,14 @@ Variable that holds the compiler state, 0 is interpreting 1 is compiling.
 SWAP   n1 n2 --- n2 n1                                                         
 Swap the two top items on the stack.
 
-SYSTEM   c-addr u ---                                                          
-Execute the specified system command.    
-
 SYSVARS   --- d-addr                                                           
 Obtain the address of the system variables.
 
 SYSVARS!   c idx ---                                                           
-Store value C into byte offset idx in the system variabled    
+Store value C into byte offset idx in the system variables.    
 
 SYSVARS@   idx --- c                                                           
-Read value C from byte offset idx in the system variabled    
+Read value C from byte offset idx in the system variables.    
 
 THEN   x ---                                                                   
 End an IF THEN or IF ELSE THEN construction.
@@ -988,6 +1024,10 @@ Constant -1, indicates TRUE
 TUCK   x1 x2 --- x2 x1 x2                                                      
 Copy the top of stack to a position under the second item.  
 
+TURNKEY   xt "ccc" ---                                                         
+Save the current FORTH system is a way it automatically starts xt
+when loaded and run.
+
 TYPE   c-addr1 u ---                                                           
 Output the string starting at c-addr and length u to the terminal.
 
@@ -1005,6 +1045,7 @@ f is true if and only if the unsigned number u1 is greater than u2.
 
 UM*   u1 u2 --- ud                                                             
 Multiply two unsigned numbers, giving double result. 
+Uses MLT even though slightly longer
 
 UM/MOD   ud u1 --- urem uquot                                                  
 Divide the unsigned double number ud by u1, giving unsigned quotient
@@ -1014,7 +1055,7 @@ UNLOOP   ---
 Undo return stack effect of loop, can be followed by EXIT    
 
 UNNEST   ---                                                                   
-Synonym for EXIT, used by compiler, so decompiler can use this as end of
+Synonym for EXIT, used by compiler, so a decompiler can use this as end of
 colon definition.   
 
 UNTIL   x ---                                                                  
@@ -1032,6 +1073,9 @@ to change its value.
 VARIABLE   "ccc" ---                                                           
 Create a variable where 1 cell can be stored. When executed it
 returns the address.
+
+VDU                                                                            
+Loop over all placed C, and , values placed before an END-VDU.
 
 VOC-LINK                                                                       
 Variable that links all vocabularies together, so we can link.
@@ -1089,6 +1133,15 @@ Copile the execution token of the word with name ccc as a literal.
 
 [CHAR]   "ccc" ---                                                             
 Compile the first character of "ccc" as a literal.
+
+[DEFINED]   "ccc" --- f                                                        
+Produce a flag indicating whether the next word is defined.	
+
+[IF]   f ---                                                                   
+If the flag is false, conditionally skip till the next [ELSE] or [ENDIF]
+
+[THEN]   ---                                                                   
+Terminate [IF] [THEN] does nothing.
 
 \                                                                              
 Comment till end of line.
