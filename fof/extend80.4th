@@ -443,7 +443,7 @@ DEFINITIONS
 \G increased if fof is loaded low by load fof.bin but is not done by default.
 \G Warning, this performs a WARM start to reinitialise the stacks if sucessful.
 	MB@ $OB = IF EXIT THEN
-    $0000 RP0 ! $FF00 SP0 ! WARM ;
+    $0000 R0 ! $FF00 S0 ! WARM ;
     
 : D* ( ud1 ud2 --- ud1*ud2)
 \G Double multiply.
