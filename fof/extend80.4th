@@ -428,6 +428,18 @@ DEFINITIONS
      UNTIL DROP LOOP  ;
      
 \ PART 7: Miscellaneous words (@jackokring)
+
+: 2R> ( R: d --- d)
+\G Bring a double from the return stack.
+    R> R> SWAP ;
+    
+: 2>R ( d --- R: d)
+\G Place a double on the return stack.
+    SWAP >R >R ;
+    
+: 2R@ ( R: d --- d R: d)
+\G Copy a double from the return stack.
+    R@ R@ SWAP ; 
      
 : LATER ( R: addr1 addr2 --- addr2 addr1)
 \G Delays execution of the rest of a word until after finishing the word
@@ -461,6 +473,7 @@ DEFINITIONS
 : T+ ( ut1 ut2 --- ut1+ut2)
 \G Triple add.
     >R ROT >R >R SWAP >R 0 TUCK D+ 0 R> R> 0 TUCK D+ D+ R> R> + + ;
+
 : T- ( ut1 ut2 --- ut1-ut2)
 \G Triple subtraction.
     >R ROT >R >R SWAP >R 0 TUCK D- S>D R> R> 0 TUCK D- D+ R> R> - + ;
@@ -481,7 +494,7 @@ DEFINITIONS
 : DU/MOD ( ud ud --- udrem udquot)
     ?DUP 0= IF
         MU/MOD 2>R 0 2R> EXIT
-    THEN (DU/MOD) DUP >R ROT ROT 2>R
+    THEN (DU/MOD) DUP >R -ROT 2>R
     1 SWAP LSHIFT TUM*
     DUP R@ = IF -1 ELSE 2DUP R@ UM/MOD NIP THEN
     2R@ ROT DUP >R TUM* T-
