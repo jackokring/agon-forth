@@ -3,6 +3,7 @@
 \ copyleft (c) 1994-2014 by the sbc09 team, see AUTHORS for more details.
 \ Most Z80 primitives: ; Copyright (c) 1994,1995 Bradford J. Rodriguez
 \ copyleft (c) 2022 L.C. Benschop for Cerberus 2080.
+\ copyleft (c) 2023 S. Jackson (fof)
 \ license: GNU General Public License version 3, see LICENSE for more details.
 \ It is extensively commented as it must serve as an introduction to the
 \ construction of Forth compilers.
@@ -24,8 +25,9 @@ ASSEMBLE HEX
 
 \ PART 0: Boot vectors.
 ORIGIN ORG
- JP $45 A;
+ JP $45 A; \ reset vector
  5 ALLOT-T
+ \ reserve jump proxy vectors to 24 bit code in mos
  RST .LIL 8 RET A; \ RST 8 handler
  5 ALLOT-T
  RST .LIL 010 RET A; \ RST 16 handler
@@ -38,9 +40,12 @@ ORIGIN ORG
  5 ALLOT-T
  RST .LIL 030 RET A;
  5 ALLOT-T
- JR $45 A; \ RST @ 38 turn absolute to relative
+ \ the last jump vector is not large enough to do a direct proxy
+ JR $0 A; \ RST @ 38 turn absolute to relative restart
  4D C, 4F C, 53 C, 0 C, 0 C, \ Agon MOS header at 64
-\ Here we jump to at start (is at $45).
+ \ removed bytes
+ \ Here we jump to at start (is at $45).
+ \ N.B. rentry will eventually consume the SPL stack
  PUSH .LIL IY
  PUSH .LIL IX
  PUSH .LIL BC
@@ -162,7 +167,7 @@ CODE EXIT ( --- )
 END-CODE
 
 CODE UNNEST ( --- )
-\G Synonym for EXIT, used by compiler, so decompiler can use this as end of
+\G Synonym for EXIT, used by compiler, so a decompiler can use this as end of
 \G colon definition.   
     LD L, 0 (IX+)
     INC IX
@@ -377,27 +382,43 @@ END-CODE
 
 CODE UM* ( u1 u2 --- ud)
 \G Multiply two unsigned numbers, giving double result. 
-\G Use MUL **FIX ME**
-    PUSH BC    \ store TOS
-    EXX        \ Use shadow register set.
-    POP BC     \ Get TOS back (operand 1)
+\G Uses MLT even though slightly longer
     POP DE     \ Get other operand.
-    LD HL, 0   \ Initialize MSW of result, DE will be replaced by LSW
-    LD A, $11  \ 17 iteration
-    OR A       \ Clear carry
-    BEGIN
-	RR H   \ Rotate HL:DE 1 bit right (LSB of DE gets to carry).
-	RR L
-	RR D
-	RR E
-	U< IF
-	    ADD HL, BC \ If carry, add BC operand.
-	THEN   \ Any carry from this add will be shifted back in.
-	DEC A  
-    0= UNTIL
-    PUSH DE    \ Push result
+    LD H, C
+    LD L, E
+    MLT HL
+    PUSH HL    \ Save lower
+    LD H, B
+    LD L, D
+    MLT HL
+    PUSH HL    \ Save upper
+    LD H, C
+    LD L, D
+    MLT HL
+    PUSH HL    \ Save mid 1
+    LD H, B
+    LD L, E
+    MLT HL     \ Have mid 2
+    POP BC
+    ADD HL, BC \ Have mid and carry
+    POP BC     \ Have high 
+    LD A, B
+    ADC 0      \ Add carry to high high
+    LD B, A
+    LD A, C
+    ADD H
+    LD C, A
+    LD A, B
+    ADC 0      \ Add carry to high high
+    LD B, A    \ BC high complete almost
+    POP DE     \ Have low
+    LD A, L
+    ADD D
+    LD D, A    \ Have low finished
+    PUSH DE
+    SBC HL, HL \ Get possible carry
+    ADD HL, BC \ Have high
     PUSH HL
-    EXX        \ Back to normal registers
     POP BC
     NEXT
 END-CODE

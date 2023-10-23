@@ -323,22 +323,26 @@ DEFINITIONS
 
 \ PART 6: File related words.
 
-: BSAVE ( addr len "ccc" ---)
-\G Save memory at address addr, length len bytes to a file
+: (FILE$) ( "ccc" --- ud)
+\G Makes OSSTRING filled with the name in mos format and presents it in 24 bit.
+    BL WORD COUNT OSSTRING >ASCIIZ OSSTRING MB@ ;
+
+: BSAVE ( daddr dlen "ccc" ---)
+\G Save memory at address daddr, length dlen bytes to a file
 \G filename is the next word parsed.       
-  BL WORD COUNT OSSTRING >ASCIIZ OSSTRING ROT ROT 2 OSCALL -37 ?THROW ;
+   2>R (FILE$) 2R> 2 DOSCALL -37 ?THROW ;
 
 : BLOAD ( addr len "ccc" ---)
 \G Load a file in memory at address addr, filename is the next word parsed.    
-   BL WORD COUNT OSSTRING >ASCIIZ OSSTRING ROT ROT 1 OSCALL -38 ?THROW ;
+   2>R (FILE$) 2R> 1 DOSCALL -38 ?THROW ;
 
 : DELETE ( "ccc"  --)
 \G Delete the specified file.    
-  BL WORD COUNT OSSTRING >ASCIIZ OSSTRING 0 0 5 OSCALL -38 ?THROW ;
+  (FILE$) 0. 0. 5 DOSCALL -38 ?THROW ;
 
 : CD ( "ccc"  --)
 \G Go to the specified directory.    
-  BL WORD COUNT OSSTRING >ASCIIZ OSSTRING 0 0 3 OSCALL -40 ?THROW ;
+  (FILE$) 0. 0. 3 DOSCALL -40 ?THROW ;
 
 \ removed SYSTEM and ED due to overlay fof
     
@@ -349,15 +353,15 @@ DEFINITIONS
 
 : CAT ( ---)
     \G Show  the disk catalog
-    CR S" ." OSSTRING >ASCIIZ OSSTRING 0 0 4 OSCALL DROP
+    CR S" ." OSSTRING >ASCIIZ OSSTRING MB@ 0. 0. 4 DOSCALL DROP
 ;
 
 : SYSVARS@ ( idx --- c)
-\G Read value C from byte offset idx in the system variabled    
+\G Read value C from byte offset idx in the system variables.    
     SYSVARS -ROT + SWAP XC@ ;
 
 : SYSVARS! ( c idx ---)
-\G Store value C into byte offset idx in the system variabled    
+\G Store value C into byte offset idx in the system variables.    
     SYSVARS -ROT + SWAP XC! ;
 
 : MS ( n --- )
@@ -367,18 +371,29 @@ DEFINITIONS
       DUP 0 SYSVARS@ <> \ Wait until system time changes (50 times per second)
      UNTIL DROP LOOP  ;
      
-\ PART 7: eZ80 related words. **FIX ME**
+: LATER ( R: addr1 addr2 --- addr2 addr1)
+\G Delays execution of the rest of a word until after finishing the word
+\G calling the word that then called LATER.
+    R> R> SWAP >R >R ;
+    
+: FREE ( --- u)
+\G Return estimated free space
+    SP@ PAD 80 + - ;
+    
+: FREEMAX ( ---)
+\G Frees the maximum space if possible. By default 32kB is used. This can be
+\G increased if fof is loaded low by load fof.bin but is not done by default.
+	MB@ $OB = IF EXIT THEN
+    $0000 RP0 ! $FF00 SP0 ! WARM ;
+    
+\ PART 7: Agon related words. (@jackokring)
 
-: L@ ( daddr --- ud)
-;
-
-: L! ( daddr ud ---)
-;
-
-: LEXECUTE ( daddr ---)
-\G Long execute using SPL so must be an ADL code def and return via RET .LIL
-\G Can use PUSH .SIS and POP .SIS for stack access.
-;
+: VDU CREATE MARKER> DOES> DUP @ SWAP 1+ DO
+\G Loop over all placed C, and , values placed before an END-VDU.
+	I @ EMIT LOOP ;
+	
+: END-VDU <RESOLVE ; 
+\G End a VDU definition which then has a name to use.
 
 CAPS ON
 

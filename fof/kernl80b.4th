@@ -182,7 +182,7 @@ LABEL R0ADDR ENDASM \ Create an assembler label at cfa
 CODE EMIT ( c ---)
 \G Print character c on the screen.     
     LD A, C
-    RST $10
+    RST $10 \ Proxy call to mos
     POP BC
     NEXT
 END-CODE
@@ -215,12 +215,12 @@ END-CODE
   DUP IF 0 DO DUP I + C@ EMIT LOOP DROP ELSE DROP DROP THEN ;
 
 : (.") ( --- )
-\G Runtime part of ."
+\G Runtime part of ." .........."
 \ This expects an in-line counted string.
   R> COUNT OVER OVER TYPE + >R ;
 
 : (S")  ( --- c-addr u )
-\G Runtime part of S"
+\G Runtime part of S" .........."
 \ It returns address and length of an in-line counted string.
   R> COUNT OVER OVER + >R ;
 
@@ -387,22 +387,52 @@ CODE KEY? ( --- f)
     LD B, A
     NEXT	
 END-CODE
--
-CODE OSCALL ( HL DE BC func --- res)
+
+CODE MB@ ( --- u)
+\G Current value of MB register
+    A; $ED C, $6E C, \ LD A, MB
+    PUSH DE
+    LD E, A
+    LD D, $0
+    NEXT
+END-CODE
+
+CODE DOSCALL ( dHL dDE dBC func --- res)
 \G Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
 \G Return the return code as in the A register.
     LD A, C
-    EXX
+    \ Format BC
     POP BC
+    PUSH .LIL BC
+    INC .LIL SP
+    POP BC
+    PUSH .LIL BC
+    INC .LIL SP
+    INC .LIL SP
+    POP .LIL BC
+    \ Format DE
     POP DE
+    PUSH .LIL DE
+    INC .LIL SP
+    POP DE
+    PUSH .LIL DE
+    INC .LIL SP
+    INC .LIL SP
+    POP .LIL DE
+    \ Format HL
     POP HL
-    EXX
-    PUSH DE
-    EXX
+    PUSH .LIL HL
+    INC .LIL SP
+    POP HL
+    PUSH .LIL HL
+    INC .LIL SP
+    INC .LIL SP
+    POP .LIL HL
+    PUSH IX    \ Save IP
     RST $8
-    POP DE
+    POP IX     \ Restore IP
     LD C, A
-    LD B, $00
+    LD B, $00  \ Result TOS
     NEXT
 END-CODE
 
@@ -565,9 +595,13 @@ CONSTANT R/W ( --- mode)
 \G Modify the R/O W/O or R/W mode so that it applies to binary files. 
 ;
 
+: 04TUCK ( n --- 0 0 0 0 n)
+\G Makes 2 double literal zeros tucked on the stack.
+    >R 0. 0. R> ;
+
 : FEOF ( fid --- f)
 \G Check end-of-file.
-    0 0 ROT $E OSCALL 1 = ;
+    04TUCK 0 $E DOSCALL 1 = ;
 ;    
 
 : FGETC ( fid --- c|-1)
@@ -575,7 +609,7 @@ CONSTANT R/W ( --- mode)
     DUP FEOF IF
 	DROP -1 
     ELSE
-	0 0 ROT $C OSCALL
+	04TUCK 0 $C DOSCALL
     THEN	
 ;
 
@@ -583,7 +617,7 @@ CONSTANT R/W ( --- mode)
 : FPUTC ( c fid ---)
 \G Put a single character into a file.
     SWAP 8 LSHIFT + ( combine char and Fid into one 16-bit word)
-    0 0 ROT $D OSCALL DROP ;
+    04TUCK 0 $D DOSCALL DROP ;
 ;    
 
 
@@ -632,7 +666,7 @@ VARIABLE FID
 \G File must already exist unless open mode is write only.
 \G Return the file-ID and the IO result. (ior=0 if success)
     >R OSSTRING >ASCIIZ 
-    OSSTRING 0 R> $A OSCALL DUP 0= ;
+    OSSTRING MB@ 0. R> 0 $A DOSCALL DUP 0= ;
 
 : CREATE-FILE ( c-addr u mode --- fid ior)
 \G Create a new file with the name starting at c-addr with length u. 
@@ -641,7 +675,7 @@ VARIABLE FID
 
 : CLOSE-FILE ( fid --- ior)
 \G Close the open file described by fid.
-  0 0 ROT $B OSCALL DROP 0 ;
+  04TUCK 0 $B DOSCALL DROP 0 ;
 
 \ PART 11: INTERPRETER HELPER WORDS
 

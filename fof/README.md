@@ -82,11 +82,11 @@ run &40000 tetris.4th
 
 You should now see a message like this:
 ```
-Agon 16-bit Z80 Forth, 2023-07-20 GPLv3
-Copyright 2023 L.C. Benschop, Brad Rodriguez
+Agon 16-bit Z80 *fof, 2023-10-23 GPLv3
+Copyright 2023 L.C. Benschop, Brad Rodriguez, S. Jackson
 ```
 
-You are now at the FORTH command prompt. You can type a FORTH command
+You are now at the FORTH (FOF) command prompt. You can type a FORTH command
 like this:
 
 ```
@@ -184,12 +184,11 @@ one.
 
 ## File related commands
 
-
-OPEN <name>
+`OPEN <name>`
 
 Select the specified source file to edit and load.
-`OPEN squares.4th`
 
+`OPEN squares.4th`
 
 `OK`
 
@@ -224,6 +223,7 @@ Save a memory region into the specified file. For example
 Save the current FORTH dictionary into the specified file. You can later
 load this file at the MOS prompt and run it.
 Example:
+
 `SAVE-SYSTEM myapp.bin`
 
 ## Glossary file
@@ -246,7 +246,6 @@ look the same as you learned them, as opposed to more traditional FORTH
 assemblers, where instructions have a postfix notation. Postfix makes the
 implementation of the assembler simpler. In particular for the Z80, most
 FORTH assemblers either only implement the 8080 subset of instructions or use a strange mix of 8080 and Z80 mnemonics that are completely nonstandard.
-I wanted my Z80 code to look like Z80 code in other assemblers.
 
 However, there are a few small diferences:
 * You need to attact a comma to each source operand and separate it from
@@ -427,83 +426,17 @@ From Agon Z80 FORTH, run the following commands:
 This will load the files metaz80.4th, kernl80a.4th, kernl80b.4th and kernl80c.4th and then save the rebuilt kernel80.bin image.
 Finally it will exit FORTH and run to the MOS prompt.
 
-###Extension stage.
+### Extension stage.
 
 On the Agon MOS prompt, load and run kernel80.bin
-
+```
 load kernel80.bin
 run
-
+```
 This starts a minimal FORTH system. You can now load the extensions.
 
-FLOAD extend80.4th
+`FLOAD extend80.4th`
 
 When extend80.4th and asmz80.4th are loaded a lot of Redefining
 messages are shown. This is normal.  extend80.4th will also load the assembler and save the rebuilt fof.bin file and exit FORTH.
-
-## Origin
-
-The machine-independent code and the metacompiler were based on SOD32
-FORTH that I wrote in 1994.  SOD32 was a virtual 32-bit stack machine.
-
-Much of the design of that FORTH was based on public domain FORTH
-implementations of the 1980s, like F-83 by Laxen & Perry and F-PC by
-Tom Zimmer and Robert L. Smith. 
-
-Later in 1994-1995 I wrote a FORTH for the 6809, based on SOD32
-FORTH. This one used a prefix assembler, just like the one used in
-F-PC and like the one I now wrote for the Z-80.
-
-When I wanted to create a FORTH for the Cerberus-2080, I wanted to have it
-for the Z80 as that is the CPU that I am most familiar with and that IMHO
-is more suitable for running FORTH. Besides, Alexandre Dumont was already
-working on a FORTH for the 65C02.
-
-I had a few loose requirements:
-* It would be a metacompiled FORTH, generated from an existing FORTH system.
-  Once it would be complete, it would be able to recompile itself
-  (be self-hosting). F-83 and F-PC also had this feature.
-  * The alternative to metacompiling is building the FORTH system using
-    a traditonal assembler. For example Camel Forth is written using a
-    macro assembler. The problem with this is that you are not self-hosting
-    and that most FORTH implementations depend on very specific macro features
-    found in one specific cross assembler that may not be available or only
-    runs under DOS.
-* Like F-PC it would load source code from text files. I also considered a
-  block-based system, but I decided against it for the following reasons.
-  * BIOS would only allow to read and write files in one go. It would not
-    support the random access that allowed you to maintain a very large
-    disk file and have only a few blocks in memory at once.
-  * Blocks have traditionally 16 lines of 64 characters each. This did not
-    work well with the 40 column screen of Cerberus. 40 columns is not
-    ideal for text files, but one can write text files with short lines.
-* It would contain a text file editor, like F-PC.    
-* It had to be loosely ANS Forth based.
-* It had to have a prefix assembler, like F-PC.
-
-For Agon I wanted to stick with most features from Cerberus Z80
-FORTH, except that I decided not to include a text editor in Forth
-itself. A buffer to hold a large source file would take up too much
-addressing space. The good news is that it is easy for Agon to run the
-editor as an external program, even from within Forth.
-
-I ended up using most of the primitives of Camel Forth, a FORTH
-written for the Z80 by Brad Radriguez in 1994 and 1995. Cerberus Z80
-Forth and Agon Forth are NOT Camel Forth, it just contains code from
-it. I could have picked the Z80 primitives from my old ZX-Spectrum
-FORTH instead, but CamelForth promised to be faster.
-
-The main thing missing was a Z80 assembler. I could not find any good
-ones written in FORTH. The Z80 assembler I used for my ZX Spectrum
-Forth was a postfix assembler (I think I could even live with that),
-but it also had weird mnemonics unlike the well-known Z80 mnemonics
-and more like the 8080 mnemonics, but not quite that. So I decided to
-write my own Z80 assembler in FORTH that was a prefix assembler. This
-was more of a challenge than I thought at first, but I got it done.
-
-Others who read my source code can now at least recognize the
-assembler instructions.
-
-
-
 

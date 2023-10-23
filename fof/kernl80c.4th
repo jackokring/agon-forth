@@ -68,13 +68,13 @@ CROSS-COMPILE
 \ PART 13: THE COMPILER
 
 VARIABLE ERROR$ ( --- a-addr )
-\G Variable containing string address of ABORT" message.
+\G Variable containing string address of ABORT" message."
 
 VARIABLE HANDLER ( --- a-addr )
 \G Variable containing return stack address where THROW should return.
 
 : (ABORT") ( f -- - )
-\G Runtime part of ABORT"
+\G Runtime part of ABORT" .........."
            IF R>  ERROR$ ! -2 THROW
            ELSE R> COUNT +  >R THEN ;
 
@@ -534,8 +534,8 @@ LABEL COLDSTARTADDR ENDASM
 
 : F-STARTUP
 \G This is the first colon definition called after a (cold) startup.    
-    ." Agon 16-bit Z80 Forth v0.09, 2023-07-02 GPLv3" CR
-    ." Copyright (C) 2023 L.C. Benschop, Brad Rodriguez" CR
+    ." Agon 16-bit eZ80 *fof, 2023-10-23 GPLv3" CR
+    ." Copyright (C) 2023 L.C. Benschop, Brad Rodriguez, S. Jackson" CR
     0 SYSVARS 5 0 D+ XC!
     WARM ;
 
