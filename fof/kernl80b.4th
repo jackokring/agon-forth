@@ -404,30 +404,30 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     \ Format BC
     POP BC
     PUSH .LIL BC
+    DEC .LIL SP
+    DEC .LIL SP
+    POP .LIL BC \ MSB ok
+    POP BC      \ All ok
     INC .LIL SP
-    POP BC
-    PUSH .LIL BC
-    INC .LIL SP
-    INC .LIL SP
-    POP .LIL BC
+    INC .LIL SP \ Discard
     \ Format DE
     POP DE
     PUSH .LIL DE
-    INC .LIL SP
-    POP DE
-    PUSH .LIL DE
-    INC .LIL SP
-    INC .LIL SP
+    DEC .LIL SP
+    DEC .LIL SP
     POP .LIL DE
+    POP DE
+    INC .LIL SP
+    INC .LIL SP
     \ Format HL
     POP HL
     PUSH .LIL HL
-    INC .LIL SP
-    POP HL
-    PUSH .LIL HL
-    INC .LIL SP
-    INC .LIL SP
+    DEC .LIL SP
+    DEC .LIL SP
     POP .LIL HL
+    POP HL
+    INC .LIL SP
+    INC .LIL SP
     PUSH IX    \ Save IP
     RST $8
     POP IX     \ Restore IP
