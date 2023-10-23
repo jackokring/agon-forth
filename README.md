@@ -3,35 +3,20 @@ Forth for Agon computer
 
 ## forth16
 
-The forth16 directory contains a 16-bit FORTH for Agon, to be run in Z-80 mode.
+The `forth16` directory contains a 16-bit FORTH for Agon, to be run in Z-80 mode. This is not a development focus.
 
 ## forth24
 
-The forth124 directory contains a 24-bit FORTH for Agon, to be run in
+The `forth24` directory contains a 24-bit FORTH for Agon, to be run in
 eZ80 ADL mode. This can use all available RAM. Currently this has the
-same feature set as forth16, but will be further developed.
+same feature set as `forth16` plus some extras, and will be further developed.
 
-## examples
+## fof (@jackokring)
 
-The examples directory contains FORTH example programs that are not specific to Agon FORTH, but that can run under it (and under both versions).
-* tetris.4th is a Tetris-like program for text terminals. I used to run it a lot in the early days of Linux.
-* tester.4th and core.4th is a small test suite for Forth.
-* glosgen.4th is a program to generate glossary files.
-* squares.4th is a small example program to run on Agon FORTH.
+The `fof` directory is under active development. It started as a clone of `forth16` and is being minimized and extrended
+for use as a `*fof` command for including in the `mos` directory on the sdcard as `mos/fof.bin`. This of course limits
+memory to 32kB and was the main reason to pick a 16-bit forth for this application.
 
-## examples_agon
-
-The examples_agon directory contains FORTH example programs and utilities
-that are specific to Agon FORTH, but that run under both the 16-bit and the
-24-bit versions of it.
-* serpent.4th Snake-type game originally submitted to the Olimex WPC June 2023.
-  This is a slight adaptation of this game.
-* graphics.4th Graphics library, including turtle graphics.
-* grpdemo.4th Graphics demo, runs on top of graphics.4th
-* dodemo.4th. Load graphics.4th and grpdemo.4th and then runs the demo. Put forth.bin (or forth24.bin), graphics.4th, grpdemo.4th and dodemo.4th all in one directory, then the following
-  commands run the demo.
-```
-load forth.bin
-run . dodemo.4th
-```
+The intent is a forth that builds in a similar manor, has reduce memory requirements, is actively developed unlike `forth16`
+and will run almost all `forth24` source code.
 
