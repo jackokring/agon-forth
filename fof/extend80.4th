@@ -444,10 +444,6 @@ DEFINITIONS
 \G Warning, this performs a WARM start to reinitialise the stacks if sucessful.
 	MB@ $OB = IF EXIT THEN
     $0000 RP0 ! $FF00 SP0 ! WARM ;
-
-: D- ( ud1 ud2 --- ud1-ud2)
-\G Double subtract.
-    DNEGATE D+ ;
     
 : D* ( ud1 ud2 --- ud1*ud2)
 \G Double multiply.

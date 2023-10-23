@@ -478,9 +478,6 @@ Add the double numbers d1 and d2.
 D-   d1 d2 --- d3                                                              
 subtract double numbers d2 from d1.    
 
-D-   ud1 ud2 --- ud1-ud2                                                       
-Double subtract.
-
 D.   d ---                                                                     
 Type the double number d to the terminal.
 
