@@ -226,6 +226,11 @@ Example:
 
 `SAVE-SYSTEM myapp.bin`
 
+Save the current FORTH system into the specified file and cause the word
+with execution address `addr` to run at startup.
+Example:
+`' RUN-MYAPP TURNKEY myapp.bin`
+
 ## Glossary file
 
 The file `glossary.txt` gives a short explanation for every FDRTH word.
