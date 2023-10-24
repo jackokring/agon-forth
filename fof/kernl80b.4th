@@ -391,9 +391,9 @@ END-CODE
 CODE MB@ ( --- u)
 \G Current value of MB register.
     LD A, MB
-    PUSH DE
-    LD E, A
-    LD D, $0
+    PUSH BC \ Top stack save correct
+    LD C, A
+    LD B, $0
     NEXT
 END-CODE
 
@@ -428,9 +428,10 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     POP HL
     INC .LIL SP
     INC .LIL SP
-    PUSH IX    \ Save IP
+    \ Relocation assumption, or indirect non-ADL usage from system call
+    PUSH .LIL IX    \ Save IP
     RST $8
-    POP IX     \ Restore IP
+    POP .LIL IX     \ Restore IP
     LD C, A
     LD B, $00  \ Result TOS
     NEXT
