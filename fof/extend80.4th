@@ -395,7 +395,29 @@ DEFINITIONS
 \G Go to the specified directory.    
   (FILE) 0. 0. 3 DOSCALL -40 ?THROW ;
 
-\ removed SYSTEM and ED due to overlay fof
+: SYSTEM ( c-addr u ---)
+\G Execute the specified system command.    
+  CR OSNAME 0. 0. 16 DOSCALL -39 ?THROW ;  
+
+: EDIT-FILE ( c-addr u lineno --- )
+\G Invoke the system editor on the file whose name is specified by c-addr u
+\G at the specified line number. If not in *fof space.
+    MB@ $0B = IF EXIT THEN \ Exit if in compact transient area as nano would want it    
+    >R
+    S" nano " OSSTRING >ASCIIZ \ put the editor name in the string buffer.
+    OSSTRING ASCIIZ> + >ASCIIZ \ put the file name in the string buffer.
+    S"  &90000 " OSSTRING ASCIIZ> + >ASCIIZ
+    \ put additional editor parameter in string buffer (buffer address).
+    R> 0 BASE @ >R DECIMAL <# #S #> OSSTRING ASCIIZ> + >ASCIIZ
+    R> BASE ! \ Add line number to OS string.
+    OSSTRING MB@ 0. 0. 16 DOSCALL -39 ?THROW
+    0 SYSVARS 5. D+ XC!
+;
+
+: ED ( --- )
+\G Invoke the editor on the current file (selected with OPEN)   
+    CURFILENAME C@ 0= -38 ?THROW
+    CURFILENAME ASCIIZ> 1 EDIT-FILE ;
     
 : SAVE-SYSTEM ( "ccc"  --- )
 \G Save the current FORTH system to the specifed file.    
