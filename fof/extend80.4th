@@ -541,6 +541,11 @@ DEFINITIONS
 : END-VDU ( ---)
 \G End a VDU definition which then has a name to use.
     <RESOLVE ; 
+    
+: VWAIT ( ---)
+\G Wait for system vertical blank as is done in BBC basic.
+    0 SYSVARS@
+    BEGIN DUP 0 SYSVARS@ = WHILE REPEAT DROP ; 
 
 CAPS ON
 
