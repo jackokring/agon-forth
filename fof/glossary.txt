@@ -564,6 +564,13 @@ Show a hex/ascii dump of the memory block of len bytes at addr
 DUP   x --- x x                                                                
 Duplicate the top cell on the stack.    
 
+ED   ---                                                                       
+Invoke the editor on the current file (selected with OPEN)   
+
+EDIT-FILE   c-addr u lineno ---                                                
+Invoke the system editor on the file whose name is specified by c-addr u
+at the specified line number. If not in *fof space.
+
 ELSE   x1 --- x2                                                               
 part of IF ELSE THEN construction.
 
@@ -651,7 +658,7 @@ Return estimated free space
 FREEMAX   ---                                                                  
 Frees the maximum space if possible. By default 32kB is used. This can be
 increased if fof is loaded low by load fof.bin but is not done by default.
-Warning, this performs a WARM start to reinitialise the stacks if sucessful.
+Warning, this performs a WARM start to reinitialise the stacks if successful.
 
 GET-ORDER   --- w1 w2 ... wn n                                                 
 Return all wordlists in the search order, followed by the count.
@@ -765,6 +772,9 @@ after it.
 
 MAX   n1 n2 --- n3                                                             
 n3 is the maximum of n1 and n2.
+
+MB?   ---                                                                      
+Throws an error if fof was loaded by *fof.
 
 MB@   --- u                                                                    
 Current value of MB register.
@@ -1015,6 +1025,9 @@ Variable that holds the compiler state, 0 is interpreting 1 is compiling.
 SWAP   n1 n2 --- n2 n1                                                         
 Swap the two top items on the stack.
 
+SYSTEM   c-addr u ---                                                          
+Execute the specified system command.    
+
 SYSVARS   --- d-addr                                                           
 Obtain the address of the system variables.
 
@@ -1077,6 +1090,9 @@ UM*   u1 u2 --- ud
 Multiply two unsigned numbers, giving double result. 
 Uses MLT even though slightly longer
 
+UM/   ud u --- udquot                                                          
+Unsigned mixed division.    
+
 UM/MOD   ud u1 --- urem uquot                                                  
 Divide the unsigned double number ud by u1, giving unsigned quotient
 and remainder.        
@@ -1113,6 +1129,9 @@ Variable that links all vocabularies together, so we can link.
 VOCABULARY   ---                                                               
 Make a definition that will replace the last word in the search order
 by its wordlist.
+
+VWAIT   ---                                                                    
+Wait for system vertical blank as is done in BBC basic.
 
 W/O   --- mode                                                                 
 Write only file access mode.

@@ -575,10 +575,14 @@ LABEL CURFILEADDR ENDASM
 : ASCIIZ> ( c-addr1 --- c-addr1 u)
   DUP 80 0 SCAN DROP OVER - 
 ;
+
+: NAME ( "ccc" --- addr len)
+\G Make a name.
+    BL WORD COUNT ;
     
 : OPEN ( "ccc" --- )
 \G Make the specified file the current file.   
- BL WORD COUNT CURFILENAME >ASCIIZ ;
+    NAME CURFILENAME >ASCIIZ ;
 
 01 
 CONSTANT R/O ( --- mode)
@@ -650,10 +654,6 @@ VARIABLE FID
 	LINE-LENGTH @ -1 0 
     THEN    
 ;
-
-: NAME ( "ccc" --- addr len)
-\G Make a name.
-    BL WORD COUNT ;
     
 : OSNAME ( addr len --- daddr)
 \G Makes an OS string from a name.

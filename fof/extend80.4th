@@ -299,6 +299,7 @@ DEFINITIONS
 -5 MESS" Dictionary full"
 -6 MESS" Below fence"
 -13 MESS" Undefined word"
+-21 MESS" Unsupported operation"
 -22 MESS" Incomplete control structure"
 -37 MESS" File I/O error"
 -38 MESS" File does not exist"
@@ -397,12 +398,16 @@ DEFINITIONS
 
 : SYSTEM ( c-addr u ---)
 \G Execute the specified system command.    
-  CR OSNAME 0. 0. 16 DOSCALL -39 ?THROW ;  
+  CR OSNAME 0. 0. 16 DOSCALL -39 ?THROW ;
+  
+: MB? ( ---)
+\G Throws an error if fof was loaded by *fof.
+    MB@ $0B = IF -21 THROW THEN ; 
 
 : EDIT-FILE ( c-addr u lineno --- )
 \G Invoke the system editor on the file whose name is specified by c-addr u
 \G at the specified line number. If not in *fof space.
-    MB@ $0B = IF EXIT THEN \ Exit if in compact transient area as nano would want it    
+    MB?  
     >R
     S" nano " OSSTRING >ASCIIZ \ put the editor name in the string buffer.
     OSSTRING ASCIIZ> + >ASCIIZ \ put the file name in the string buffer.
@@ -476,7 +481,7 @@ DEFINITIONS
 \G Frees the maximum space if possible. By default 32kB is used. This can be
 \G increased if fof is loaded low by load fof.bin but is not done by default.
 \G Warning, this performs a WARM start to reinitialise the stacks if successful.
-	MB@ $OB = IF EXIT THEN
+	MB?
     $0000 R0 ! $FF00 S0 ! WARM ;
     
 : D* ( ud1 ud2 --- ud1*ud2)

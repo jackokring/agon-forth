@@ -194,6 +194,13 @@ Select the specified source file to edit and load.
 
 Run (compile and/or interpret) the source file that is selected by OPEN.
 
+`ED`
+
+Edit the source file selected by OPEN. Leave the editor by pressing the ESC
+key. In fact the editor can edit any ASCII text files, not just FORTH
+sources. In principle you can edit this README.md file. The editor will not
+start unless fof is loaded using `load bin/fof.bin` in low memory.
+
 `FLOAD <name>`
 
 Load the spacified file into memory and immediately run it. This is equivalent
