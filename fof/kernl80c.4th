@@ -520,7 +520,7 @@ LABEL COLDSTARTADDR ENDASM
   0 UNTIL
 ;
 
-:  WARM ( ---)
+: WARM ( ---)
 \G This word is called when an error occurs. Clears the stacks, sets
 \G BASE to decimal, closes the files and resets the search order.
     R0 @ RP! S0 @ SP! DECIMAL

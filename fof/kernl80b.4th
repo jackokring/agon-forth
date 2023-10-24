@@ -411,6 +411,7 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     INC .LIL SP
     INC .LIL SP \ Discard
     \ Format DE
+    PUSH .LIL DE \ Save IP
     POP DE
     PUSH .LIL DE
     DEC .LIL SP
@@ -429,9 +430,10 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     INC .LIL SP
     INC .LIL SP
     \ Relocation assumption, or indirect non-ADL usage from system call
-    PUSH .LIL IX    \ Save IP
+    PUSH .LIL IX    \ Save RP
     RST $8
-    POP .LIL IX     \ Restore IP
+    POP .LIL IX     \ Restore RP
+    POP .LIL DE     \ Restore IP
     LD C, A
     LD B, $00  \ Result TOS
     NEXT

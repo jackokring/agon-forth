@@ -157,23 +157,20 @@ CODE EXECUTE ( xt ---)
     JP (HL)  \ Jump to it
 END-CODE
 
-CODE EXIT ( --- )
-\G Return from colon definition.    
-    LD L, 0 (IX+)
-    INC IX
-    LD H, 0 (IX+)  \ Pop IP from Return stack
-    INC IX
-    NEXTHL 
-END-CODE
-
 CODE UNNEST ( --- )
 \G Synonym for EXIT, used by compiler, so a decompiler can use this as end of
-\G colon definition.   
+\G colon definition. 
+LABEL EXZIT  
     LD L, 0 (IX+)
     INC IX
     LD H, 0 (IX+)
     INC IX
     NEXTHL 
+END-CODE
+
+CODE EXIT ( --- )
+\G Return from colon definition.    
+    JR EXZIT
 END-CODE
 
 CODE (DO) ( n1 n2 ---)
@@ -383,6 +380,7 @@ END-CODE
 CODE UM* ( u1 u2 --- ud)
 \G Multiply two unsigned numbers, giving double result. 
 \G Uses MLT even though slightly longer
+    PUSH .LIL DE \ Save IP
     POP DE     \ Get other operand.
     LD H, C
     LD L, E
@@ -420,15 +418,14 @@ CODE UM* ( u1 u2 --- ud)
     ADD HL, BC \ Have high
     PUSH HL
     POP BC
+    POP .LIL DE \ Restore IP
     NEXT
 END-CODE
 
 CODE UM/MOD  ( ud u1 --- urem uquot)
 \G Divide the unsigned double number ud by u1, giving unsigned quotient
 \G and remainder.        
-    PUSH BC   \ Store divisor
-    EXX       \ Use shadow registers
-    POP BC    \ Get divisor back
+    PUSH .LIL DE \ Save IP
     POP HL    
     POP DE    \ Get dividend in HL:DE
     LD A, $10 \ 16 iterations
@@ -458,9 +455,7 @@ CODE UM/MOD  ( ud u1 --- urem uquot)
     CPL
     LD C, A               \ Complement quotient, to BC
     PUSH HL               \ Push remainder
-    PUSH BC               \ Push quotient
-    EXX                   \ back to normal registers
-    POP BC                \ quotient to TOS
+    POP .LIL DE \ Restore IP
     NEXT
 END-CODE
 

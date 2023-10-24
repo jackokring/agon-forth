@@ -1102,7 +1102,7 @@ Undo return stack effect of loop, can be followed by EXIT
 
 UNNEST   ---                                                                   
 Synonym for EXIT, used by compiler, so a decompiler can use this as end of
-colon definition.   
+colon definition. 
 
 UNTIL   x ---                                                                  
 Form a loop with matching BEGIN.
