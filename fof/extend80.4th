@@ -475,7 +475,7 @@ DEFINITIONS
 : FREEMAX ( ---)
 \G Frees the maximum space if possible. By default 32kB is used. This can be
 \G increased if fof is loaded low by load fof.bin but is not done by default.
-\G Warning, this performs a WARM start to reinitialise the stacks if sucessful.
+\G Warning, this performs a WARM start to reinitialise the stacks if successful.
 	MB@ $OB = IF EXIT THEN
     $0000 R0 ! $FF00 S0 ! WARM ;
     
@@ -487,14 +487,17 @@ DEFINITIONS
 : TUM* ( ut u --- ut)
 \G Triple unsigned multiply.
     2>R R@ UM* 0 2R> UM* D+ ;
+    
+: UM/ ( ud u --- udquot)
+\G Unsigned mixed division.    
 
 : TUM/ ( ut u --- utquot)
 \G Triple unsigned divide.
-    DUP >R UM/MOD R> SWAP >R UM/MOD NIP R> ;
+    DUP >R UM/MOD R> SWAP >R UM/ R> ;
 
 : T+ ( ut1 ut2 --- ut1+ut2)
 \G Triple add.
-    >R ROT >R >R SWAP >R 0 TUCK D+ 0 R> R> 0 TUCK D+ D+ R> R> + + ;
+    >R ROT >R >R SWAP >R 0 TUCK D+ 0 R> R> 0 TUCK D+ D+ 2R> + + ;
 
 : T- ( ut1 ut2 --- ut1-ut2)
 \G Triple subtraction.
@@ -518,7 +521,7 @@ DEFINITIONS
         MU/MOD 2>R 0 2R> EXIT
     THEN (DU/MOD) DUP >R -ROT 2>R
     1 SWAP LSHIFT TUM*
-    DUP R@ = IF -1 ELSE 2DUP R@ UM/MOD NIP THEN
+    DUP R@ = IF -1 ELSE 2DUP R@ UM/ THEN
     2R@ ROT DUP >R TUM* T-
     DUP 0< IF
         R> 1- 2R@ ROT >R 0 T+
