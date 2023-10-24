@@ -124,6 +124,7 @@ CODE LIT ( --- n)
     INC HL
     LD B, (HL)     \ Load TOS from next cell in thread.
     INC HL
+LABEL SNEXTHL \ For slower but compact JP SNEXTHL
     NEXTHL
 END-CODE
     
@@ -135,6 +136,7 @@ LABEL BR
     LD E, (HL)
     INC HL
     LD D, (HL)
+LABEL SNEXT \ For slower but compact JP SNEXT
     NEXT
 END-CODE
 
@@ -263,7 +265,7 @@ CODE (LEAVE) ( ---)
     LD E, (HL)
     INC HL
     LD D, (HL)      \ Load IP from cell after LEAVE, branch out.
-    NEXT
+    JP SNEXT
 END-CODE
 
 \ PART 3: Code definitions used in programs.
@@ -290,7 +292,7 @@ CODE I' ( ---n)
     LD A, 3 (IX+)
     XOR $80          \ Undo the XOR 0x8000  
     LD B, A
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE J ( ---n)
@@ -311,7 +313,7 @@ CODE UNLOOP ( --- )
     EX DE, HL
     LD DE, 4
     ADD IX, DE    \ Remove 2 cells from return stack.
-    NEXTHL
+    JP SNEXTHL
 END-CODE
 
 CODE R@ ( --- x)
@@ -355,7 +357,7 @@ CODE RP! ( a-addr --- )
     PUSH BC
     POP IX
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE SP@ ( --- a-addr)
@@ -374,7 +376,7 @@ CODE SP! ( a-addr ---)
     LD L, C
     LD H, B
     LD SP, HL
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE UM* ( u1 u2 --- ud)
@@ -875,7 +877,7 @@ CODE P@ ( p-addr --- c)
 \G Read a byte from an I/O port
     IN C, (C)
     LD B, 0
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE P! ( c p-addr ---)
@@ -883,7 +885,7 @@ CODE P! ( c p-addr ---)
     POP HL
     OUT (C), L
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE    
 
 CODE SYSVARS ( --- d-addr)
@@ -900,7 +902,7 @@ CODE SYSVARS ( --- d-addr)
     POP .LIL HL  \ Pull the value into HL
     POP IX
     PUSH HL \ Put LSB address onto SPS
-    NEXT
+    JP SNEXT
 END-CODE    
 
 CODE XC@ ( d-addr --- c)
@@ -915,7 +917,7 @@ CODE XC@ ( d-addr --- c)
     POP IX
     LD .LIL C, (HL)
     LD B, 0
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE XC! ( c d-addr ---)
@@ -931,7 +933,7 @@ CODE XC! ( c d-addr ---)
     POP BC
     LD .LIL (HL), C
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE    
 
 CODE 0= ( x --- f)
@@ -1073,7 +1075,7 @@ CODE FILL ( c-addr u c ---)
     THEN
     EXX
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE (FIND) ( c-addr u nfa  --- cfa/word f )
@@ -1119,7 +1121,7 @@ CODE (FIND) ( c-addr u nfa  --- cfa/word f )
 		PUSH BC
 		EXX
 		POP BC
-		NEXT
+		JP SNEXT
 	    THEN
 	THEN
 	POP HL
@@ -1133,7 +1135,7 @@ CODE (FIND) ( c-addr u nfa  --- cfa/word f )
     0= UNTIL
     EXX             \ Not found, zero value already on stack.
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE SCAN ( c-addr1 u11 c --- c-addr2 u2 )
@@ -1195,7 +1197,7 @@ END-CODE
 
 CODE NOOP ( --- )
 \G No operation    
-    NEXT
+    JP SNEXT
 END-CODE    
 
 END-CROSS

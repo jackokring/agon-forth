@@ -349,7 +349,7 @@ CODE KEY ( --- c)
     LD C, A
     XOR A
     LD LAST-KEY (), A
-    NEXT
+    JP SNEXT
 END-CODE    
 
 CODE BYE ( --- )
@@ -394,7 +394,7 @@ CODE MB@ ( --- u)
     PUSH BC \ Top stack save correct
     LD C, A
     LD B, $0
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE DOSCALL ( dHL dDE dBC func --- res)
@@ -436,7 +436,7 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     POP .LIL DE     \ Restore IP
     LD C, A
     LD B, $00  \ Result TOS
-    NEXT
+    JP SNEXT
 END-CODE
 
 : ACCEPT ( c-addr n1 --- n2 )
