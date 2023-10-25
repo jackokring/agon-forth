@@ -469,7 +469,7 @@ DEFINITIONS
 \G calling the word that then called LATER.
     2R> SWAP 2>R ;
     
-: U* ( n1 n2 --- uprod)
+: U* ( u1 u2 --- uprod)
 \G Unsigned multiply.
     UM* DROP ;
     
@@ -477,6 +477,23 @@ DEFINITIONS
 \G Double unsigned multiply.
     >R SWAP >R 2DUP UM* 2SWAP
     R> U* SWAP R> U* + + ;
+
+: UF* ( u1 u1 --- uhigh)
+\G Unsigned multiply high.
+    UM* NIP ;
+    
+: MD+ ( n1 n2 --- nsum f)
+\G Addition with carry detect effecting a double sum.
+    0 TUCK D+ ;
+    
+: MD- ( n1 n2 --- ndiff f)
+\G Subtraction carry detect effecting a double difference.
+    0 TUCK D- ;
+    
+: DF* ( ud1 ud2 --- udhigh)
+\G Double fixed unsigned multiply high double.
+    SWAP >R SWAP >R 2DUP UM* 2SWAP
+    R> UF* SWAP R> UF* MD+ D+ ;
 
 : TUM* ( ut u --- utprod)
 \G Triple unsigned multiply.
@@ -489,14 +506,6 @@ DEFINITIONS
 : TUM/ ( ut u --- utquot)
 \G Triple unsigned divide.
     DUP >R UM/MOD R> SWAP >R UM/ R> ;
-
-: MD+ ( n1 n2 --- nsum f)
-\G Addition with carry detect effecting a double sum.
-    0 TUCK D+ ;
-    
-: MD- ( n1 n2 --- ndiff f)
-\G Subtraction carry detect effecting a double difference.
-    0 TUCK D- ;
 
 : T+ ( t1 t2 --- tsum)
 \G Triple add.

@@ -524,6 +524,9 @@ Delete the file whose name is specified by c-addr u.
 DEPTH   --- n                                                                  
 n is the number of cells on the stack (before DEPTH was executed).
 
+DF*   ud1 ud2 --- udhigh                                                       
+Double fixed unsigned multiply high double.
+
 DIGIT?   c -- 0| c--- n -1                                                     
 Convert character c to its digit value n and return true if c is a
 digit in the current base. Otherwise return false.
@@ -1083,7 +1086,7 @@ when loaded and run.
 TYPE   c-addr1 u ---                                                           
 Output the string starting at c-addr and length u to the terminal.
 
-U*   n1 n2 --- uprod                                                           
+U*   u1 u2 --- uprod                                                           
 Unsigned multiply.
 
 U.   u ---                                                                     
@@ -1097,6 +1100,9 @@ f is true if and only if unsigned number u1 is less than u2.
 
 U>   u1 u2 --- f                                                               
 f is true if and only if the unsigned number u1 is greater than u2.
+
+UF*   u1 u1 --- uhigh                                                          
+Unsigned multiply high.
 
 UM*   u1 u2 --- ud                                                             
 Multiply two unsigned numbers, giving double result. 
