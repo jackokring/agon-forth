@@ -506,6 +506,10 @@ DEFINITIONS
 : TUM/ ( ut u --- utquot)
 \G Triple unsigned divide.
     DUP >R UM/MOD R> SWAP >R UM/ R> ;
+    
+: UM*/ ( ud u1 u2 --- udpq)
+\G Use u1/u2 as a ratio to multiply ud by giving udpq.
+    TUM* TUM/ ; 
 
 : T+ ( t1 t2 --- tsum)
 \G Triple add.

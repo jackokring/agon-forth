@@ -1108,6 +1108,9 @@ UM*   u1 u2 --- ud
 Multiply two unsigned numbers, giving double result. 
 Uses MLT even though slightly longer
 
+UM*/   ud u1 u2 --- udpq                                                       
+Use u1/u2 as a ratio to multiply ud by giving udpq.
+
 UM/   ud u --- uquot                                                           
 Unsigned mixed division. 
 
