@@ -454,15 +454,15 @@ DEFINITIONS
 
 : 2R> ( R: d --- d)
 \G Bring a double from the return stack.
-    R> R> SWAP ;
+    R> R> R> SWAP ROT >R ;
     
 : 2>R ( d --- R: d)
 \G Place a double on the return stack.
-    SWAP >R >R ;
+    R> -ROT SWAP >R >R >R ;
     
 : 2R@ ( R: d --- d R: d)
 \G Copy a double from the return stack.
-    R@ R@ SWAP ; 
+    R> R@ R@ SWAP ROT >R ; 
      
 : LATER ( R: addr1 addr2 --- addr2 addr1)
 \G Delays execution of the rest of a word until after finishing the word
