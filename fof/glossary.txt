@@ -54,8 +54,11 @@ Runtime part of ABORT" .........."
 (DO)   n1 n2 ---                                                               
 Runtime part of DO. n2 is initial counter, n1 is limit
 
-(DU/MOD)   ud --- ud' shift                                                    
-Normalize for faster division.
+(DU/+)   ---                                                                   
+Division correction utility for faster division.
+
+(DU/-)   ud --- ud' shift                                                      
+Normalize utility for faster division.
 
 (FILE)   "ccc" --- ud                                                          
 Makes OSSTRING filled with the name in mos format and presents it in 24 bit.
@@ -478,9 +481,6 @@ CURRENT   --- addr
 This variable holds the address of the word list to which new definitions
 are added.
 
-D*   ud1 ud2 --- ud1*ud2                                                       
-Double multiply.
-
 D+   d1 d2 --- d3                                                              
 Add the double numbers d1 and d2.
 
@@ -496,7 +496,7 @@ Print double number d right-justified in a field of width n.
 D0=   d ---f                                                                   
 f is true if and only if d is equal to zero.    
 
-D2*   ud --- 2*ud                                                              
+D2*   ud --- ud'                                                               
 Double shift left.
 
 D=   d1 d1  --- f                                                              
@@ -558,6 +558,9 @@ Variable that holds the decimal point location for numerical conversion.
 DROP   x ---                                                                   
 Discard the top item on the stack.        
 
+DU*   ud1 ud2 --- udprod                                                       
+Double unsigned multiply.
+
 DUMP   addr len ---                                                            
 Show a hex/ascii dump of the memory block of len bytes at addr
 
@@ -569,7 +572,7 @@ Invoke the editor on the current file (selected with OPEN)
 
 EDIT-FILE   c-addr u lineno ---                                                
 Invoke the system editor on the file whose name is specified by c-addr u
-at the specified line number. If not in *fof space.
+at the specified line number. If not command loaded in *fof space.
 
 ELSE   x1 --- x2                                                               
 part of IF ELSE THEN construction.
@@ -652,8 +655,8 @@ REplace the last wordlist in the search order with FORTH-WORDLIST
 FPUTC   c fid ---                                                              
 Put a single character into a file.
 
-FREE   --- u                                                                   
-Return estimated free space
+FREE   ---                                                                     
+Print estimated free space
 
 FREEMAX   ---                                                                  
 Frees the maximum space if possible. By default 32kB is used. This can be
@@ -778,6 +781,12 @@ Throws an error if fof was loaded by *fof.
 
 MB@   --- u                                                                    
 Current value of MB register.
+
+MD+   n1 n2 --- nsum f                                                         
+Addition with carry detect effecting a double sum.
+
+MD-   n1 n2 --- ndiff f                                                        
+Subtraction carry detect effecting a double difference.
 
 MESS"   n "cccq" ---                                                           
 Create an error message for throw code n.
@@ -1037,10 +1046,10 @@ Store value C into byte offset idx in the system variables.
 SYSVARS@   idx --- c                                                           
 Read value C from byte offset idx in the system variables.    
 
-T+   ut1 ut2 --- ut1+ut2                                                       
+T+   t1 t2 --- tsum                                                            
 Triple add.
 
-T-   ut1 ut2 --- ut1-ut2                                                       
+T-   t1 t2 --- tdiff                                                           
 Triple subtraction.
 
 THEN   x ---                                                                   
@@ -1061,7 +1070,7 @@ Constant -1, indicates TRUE
 TUCK   x1 x2 --- x2 x1 x2                                                      
 Copy the top of stack to a position under the second item.  
 
-TUM*   ut u --- ut                                                             
+TUM*   ut u --- utprod                                                         
 Triple unsigned multiply.
 
 TUM/   ut u --- utquot                                                         
@@ -1073,6 +1082,9 @@ when loaded and run.
 
 TYPE   c-addr1 u ---                                                           
 Output the string starting at c-addr and length u to the terminal.
+
+U*   n1 n2 --- uprod                                                           
+Unsigned multiply.
 
 U.   u ---                                                                     
 Type the unsigned number u to the terminal.
@@ -1090,8 +1102,8 @@ UM*   u1 u2 --- ud
 Multiply two unsigned numbers, giving double result. 
 Uses MLT even though slightly longer
 
-UM/   ud u --- udquot                                                          
-Unsigned mixed division.    
+UM/   ud u --- uquot                                                           
+Unsigned mixed division. 
 
 UM/MOD   ud u1 --- urem uquot                                                  
 Divide the unsigned double number ud by u1, giving unsigned quotient
@@ -1137,8 +1149,8 @@ W/O   --- mode
 Write only file access mode.
 
 WARM   ---                                                                     
-This word is called when an error occurs. Clears the stacks, sets
-BASE to decimal, closes the files and resets the search order.
+This word is called when an error is thrown. Clears the stacks, sets
+BASE to decimal, closes the files and resets the search order. 
 
 WHILE   x1 --- x2 x1                                                           
 part of BEGIN WHILE REPEAT construction.

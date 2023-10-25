@@ -345,6 +345,10 @@ VARIABLE POCKET ( --- a-addr )
 : ABORT ( --- )
 \G Abort unconditionally without a message.
  -1 THROW ;
+  
+: MB? ( ---)
+\G Throws an error if fof was loaded by *fof.
+    MB@ $0B = IF -21 THROW THEN ; 
 
 : POSTPONE ( "ccc" --- )
 \G Parse the next word delimited by spaces and compile the following runtime.
@@ -493,6 +497,10 @@ LABEL COLDSTARTADDR ENDASM
 02 ALLOT-T
 \ Set when system is started up.
 
+: FREE ( ---)
+\G Print estimated free space
+    SP@ PAD 80 + - U. ."  bytes free " ;
+
 : QUIT ( --- )
 \G This word resets the return stack, resets the compiler state, the include
 \G buffer and then it reads and interprets terminal input.
@@ -504,25 +512,26 @@ LABEL COLDSTARTADDR ENDASM
 	  ['] OK \ Load any file on command line.
       ELSE
 	  REFILL DROP ['] INTERPRET
-      THEN CATCH DUP 0= IF
-	  DROP STATE @ 0= IF ." OK" THEN CR
-   ELSE \ throw occured.
-     DUP -2 = IF
-      ERROR$ @ COUNT TYPE SPACE
-     ELSE
-      ERRORS @
-      BEGIN DUP WHILE
-       OVER OVER @ = IF 4 + COUNT TYPE SPACE ERROR-SOURCE THEN CELL+ @
-      REPEAT DROP
-      ." Error " .
-     THEN ERROR-SOURCE
-   THEN
+      THEN
+      CATCH DUP 0= IF
+	      DROP STATE @ 0= IF FREE ." OK" THEN CR
+      ELSE \ throw occured.
+          DUP -2 = IF
+              ERROR$ @ COUNT TYPE SPACE
+          ELSE
+              ERRORS @
+              BEGIN DUP WHILE
+                  OVER OVER @ = IF 4 + COUNT TYPE SPACE ERROR-SOURCE THEN CELL+ @
+              REPEAT DROP
+              ." Error " .
+          THEN ERROR-SOURCE
+       THEN
   0 UNTIL
 ;
 
 : WARM ( ---)
-\G This word is called when an error occurs. Clears the stacks, sets
-\G BASE to decimal, closes the files and resets the search order.
+\G This word is called when an error is thrown. Clears the stacks, sets
+\G BASE to decimal, closes the files and resets the search order. 
     R0 @ RP! S0 @ SP! DECIMAL
     9 1 DO I CLOSE-FILE DROP LOOP  
     2 #ORDER !
@@ -534,8 +543,8 @@ LABEL COLDSTARTADDR ENDASM
 
 : F-STARTUP
 \G This is the first colon definition called after a (cold) startup.    
-    ." Agon 16-bit eZ80 *fof, 2023-10-23 GPLv3" CR
-    ." Copyright (C) 2023 L.C. Benschop, Brad Rodriguez, S. Jackson" CR
+    ." Agon *fof, GPL3" CR
+    ." (C) 2023 @S. Jackson, L.C. Benschop, Brad Rodriguez" CR
     0 SYSVARS 5 0 D+ XC!
     WARM ;
 

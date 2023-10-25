@@ -399,14 +399,10 @@ DEFINITIONS
 : SYSTEM ( c-addr u ---)
 \G Execute the specified system command.    
   CR OSNAME 0. 0. 16 DOSCALL -39 ?THROW ;
-  
-: MB? ( ---)
-\G Throws an error if fof was loaded by *fof.
-    MB@ $0B = IF -21 THROW THEN ; 
 
 : EDIT-FILE ( c-addr u lineno --- )
 \G Invoke the system editor on the file whose name is specified by c-addr u
-\G at the specified line number. If not in *fof space.
+\G at the specified line number. If not command loaded in *fof space.
     MB?  
     >R
     S" nano " OSSTRING >ASCIIZ \ put the editor name in the string buffer.
@@ -473,65 +469,71 @@ DEFINITIONS
 \G calling the word that then called LATER.
     2R> SWAP 2>R ;
     
-: FREE ( --- u)
-\G Return estimated free space
-    SP@ PAD 80 + - ;
+: U* ( n1 n2 --- uprod)
+\G Unsigned multiply.
+    UM* DROP ;
     
-: FREEMAX ( ---)
-\G Frees the maximum space if possible. By default 32kB is used. This can be
-\G increased if fof is loaded low by load fof.bin but is not done by default.
-\G Warning, this performs a WARM start to reinitialise the stacks if successful.
-	MB?
-    $0000 R0 ! $FF00 S0 ! WARM ;
-    
-: D* ( ud1 ud2 --- ud1*ud2)
-\G Double multiply.
+: DU* ( ud1 ud2 --- udprod)
+\G Double unsigned multiply.
     >R SWAP >R 2DUP UM* 2SWAP
-    R> * SWAP R> * + + ;
+    R> U* SWAP R> U* + + ;
 
-: TUM* ( ut u --- ut)
+: TUM* ( ut u --- utprod)
 \G Triple unsigned multiply.
     2>R R@ UM* 0 2R> UM* D+ ;
     
-: UM/ ( ud u --- udquot)
-\G Unsigned mixed division.    
+: UM/ ( ud u --- uquot)
+\G Unsigned mixed division. 
+    UM/MOD NIP ;   
 
 : TUM/ ( ut u --- utquot)
 \G Triple unsigned divide.
     DUP >R UM/MOD R> SWAP >R UM/ R> ;
 
-: T+ ( ut1 ut2 --- ut1+ut2)
-\G Triple add.
-    >R ROT >R >R SWAP >R 0 TUCK D+ 0 R> R> 0 TUCK D+ D+ 2R> + + ;
-
-: T- ( ut1 ut2 --- ut1-ut2)
-\G Triple subtraction.
-    >R ROT >R >R SWAP >R 0 TUCK D- S>D R> R> 0 TUCK D- D+ R> R> - + ;
+: MD+ ( n1 n2 --- nsum f)
+\G Addition with carry detect effecting a double sum.
+    0 TUCK D+ ;
     
-: D2* ( ud --- 2*ud)
+: MD- ( n1 n2 --- ndiff f)
+\G Subtraction carry detect effecting a double difference.
+    0 TUCK D- ;
+
+: T+ ( t1 t2 --- tsum)
+\G Triple add.
+    >R ROT >R >R SWAP >R MD+ 0 R> R> MD+ D+ 2R> + + ;
+
+: T- ( t1 t2 --- tdiff)
+\G Triple subtraction.
+    >R ROT >R >R SWAP >R MD- S>D R> R> MD- D+ R> R> - + ;
+    
+: D2* ( ud --- ud')
 \G Double shift left.
     2DUP D+ ;
 
-: (DU/MOD) ( ud --- ud' shift)
-\G Normalize for faster division.
+: (DU/-) ( ud --- ud' shift)
+\G Normalize utility for faster division.
     0 >R
     BEGIN
         DUP 0< NOT
     WHILE
         D2* R> 1+ >R
     REPEAT R> ;
+    
+: (DU/+) ( ---)
+\G Division correction utility for faster division.
+    R> R> 1- 2R@ ROT >R SWAP >R 0 T+ ;
 
 : DU/MOD ( ud ud --- udrem udquot)
     ?DUP 0= IF
         MU/MOD 2>R 0 2R> EXIT
-    THEN (DU/MOD) DUP >R -ROT 2>R
+    THEN (DU/-) DUP >R -ROT 2>R
     1 SWAP LSHIFT TUM*
     DUP R@ = IF -1 ELSE 2DUP R@ UM/ THEN
     2R@ ROT DUP >R TUM* T-
     DUP 0< IF
-        R> 1- 2R@ ROT >R 0 T+
+        (DU/+)
         DUP 0< IF
-            R> 1- 2R@ ROT >R 0 T+
+            (DU/+)
         THEN
     THEN
     R> 2R> 2DROP 1 R> ROT >R LSHIFT TUM/ R> 0 ;   
@@ -551,6 +553,13 @@ DEFINITIONS
 \G Wait for system vertical blank as is done in BBC basic.
     0 SYSVARS@
     BEGIN DUP 0 SYSVARS@ = WHILE REPEAT DROP ; 
+        
+: FREEMAX ( ---)
+\G Frees the maximum space if possible. By default 32kB is used. This can be
+\G increased if fof is loaded low by load fof.bin but is not done by default.
+\G Warning, this performs a WARM start to reinitialise the stacks if successful.
+	MB?
+    $0000 R0 ! $FF00 S0 ! WARM ;
 
 CAPS ON
 
