@@ -368,7 +368,7 @@ CODE SP@ ( --- a-addr)
     PUSH BC
     LD C, L
     LD B, H
-    JS SNEXT
+    JP SNEXT
 END-CODE
 
 CODE SP! ( a-addr ---)

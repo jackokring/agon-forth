@@ -66,6 +66,7 @@ CROSS-COMPILE
 ;
 
 \ PART 13: THE COMPILER
+\ Umm <MARKER> <RESOLVE> f83 like?
 
 VARIABLE ERROR$ ( --- a-addr )
 \G Variable containing string address of ABORT" message."
@@ -552,6 +553,7 @@ VARIABLE AT-STARTUP
 \G This is the first colon definition called after a (cold) startup.    
     ." Agon *fof, GPL3" CR
     ." (C) 2023 @>S. Jackson, L.C. Benschop, Brad Rodriguez" CR
+    \ Yes, I've done some edits and the repo has an issues tab
     0 SYSVARS 5 0 D+ XC!
     WARM ;
 
