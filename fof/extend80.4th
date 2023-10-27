@@ -4,6 +4,9 @@
 \ copyleft (c) 2022 L.C. Benschop for Cerberus 2080.
 \ license: GNU General Public License version 3, see LICENSE for more details.
 
+\ Now this is actually FORTH, and not the modified metaz80.4th limited
+\ word set of immediates.
+
 : \G POSTPONE \ ; IMMEDIATE
 \G comment till end of line for inclusion in glossary.
 

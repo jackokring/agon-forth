@@ -508,7 +508,7 @@ LABEL COLDSTARTADDR ENDASM
   \ [ apparently is an immediate word
   R0 @ RP! \ This should be true after stack trace
   \ POSTPONE
-  [ \ Sure would be nice to postpone this META?
+  [ \ Sure would be nice to postpone this META? T[ in metaz80.4th
   TIB SRC ! 0 SID !
   INCLUDE-BUFFER INCLUDE-POINTER !  
   BEGIN \ Apparently this doesn't complain though
