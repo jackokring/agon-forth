@@ -499,12 +499,14 @@ LABEL COLDSTARTADDR ENDASM
 
 : FREE ( ---)
 \G Print estimated free space
-    SP@ PAD 80 + - U. ."  bytes free " ;
+    SP@ PAD 80 + - U. ."  bytes free" CR ;
 
 : QUIT ( --- )
 \G This word resets the return stack, resets the compiler state, the include
 \G buffer and then it reads and interprets terminal input.
-  R0 @ RP! [
+  \ [ apparently is an immediate word
+  R0 @ RP! \ This should be true after stack trace
+  ['] [
   TIB SRC ! 0 SID !
   INCLUDE-BUFFER INCLUDE-POINTER !  
   BEGIN
@@ -529,9 +531,13 @@ LABEL COLDSTARTADDR ENDASM
   0 UNTIL
 ;
 
+VARIABLE AT-STARTUP
+' QUIT AT-STARTUP ! 
+
 : WARM ( ---)
 \G This word is called when an error is thrown. Clears the stacks, sets
 \G BASE to decimal, closes the files and resets the search order. 
+    \ TODO: Stack trace in hex text
     R0 @ RP! S0 @ SP! DECIMAL
     9 1 DO I CLOSE-FILE DROP LOOP  
     2 #ORDER !
@@ -539,12 +545,13 @@ LABEL COLDSTARTADDR ENDASM
     FORTH-WORDLIST CONTEXT CELL+ !
     FORTH-WORDLIST CURRENT !
     0 HANDLER !
-    QUIT ;
+    \ QUIT
+    AT-STARTUP @ EXECUTE ;
 
 : F-STARTUP
 \G This is the first colon definition called after a (cold) startup.    
     ." Agon *fof, GPL3" CR
-    ." (C) 2023 @S. Jackson, L.C. Benschop, Brad Rodriguez" CR
+    ." (C) 2023 @>S. Jackson, L.C. Benschop, Brad Rodriguez" CR
     0 SYSVARS 5 0 D+ XC!
     WARM ;
 
