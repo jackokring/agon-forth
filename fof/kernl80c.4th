@@ -507,10 +507,11 @@ LABEL COLDSTARTADDR ENDASM
 \G buffer and then it reads and interprets terminal input.
   \ [ apparently is an immediate word
   R0 @ RP! \ This should be true after stack trace
-  POSTPONE [ \ Sure would be nice to postpone this
+  \ POSTPONE
+  [ \ Sure would be nice to postpone this META?
   TIB SRC ! 0 SID !
   INCLUDE-BUFFER INCLUDE-POINTER !  
-  BEGIN
+  BEGIN \ Apparently this doesn't complain though
       CURFILENAME C@ COLDSTARTUP @ AND COLDSTARTUP OFF IF
 	  ['] OK \ Load any file on command line.
       ELSE
