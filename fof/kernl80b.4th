@@ -139,7 +139,7 @@ LABEL R0ADDR ENDASM \ Create an assembler label at cfa
 \G Divide signed double number d by single number n1, giving quotient and
 \G remainder. Round always down (floored division),
 \G remainder has same sign as divisor.
-  DUP >R 2OVER XOR >R
+  DUP >R 2DUP XOR >R
   SM/REM
   OVER R> 0< AND IF SWAP R@ + SWAP 1 - THEN R> DROP ;
 
