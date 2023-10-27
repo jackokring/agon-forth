@@ -506,16 +506,16 @@ LABEL COLDSTARTADDR ENDASM
 \G buffer and then it reads and interprets terminal input.
   \ [ apparently is an immediate word
   R0 @ RP! \ This should be true after stack trace
-  ['] [
+  POSTPONE [ \ Sure would be nice to postpone this
   TIB SRC ! 0 SID !
   INCLUDE-BUFFER INCLUDE-POINTER !  
   BEGIN
       CURFILENAME C@ COLDSTARTUP @ AND COLDSTARTUP OFF IF
 	  ['] OK \ Load any file on command line.
       ELSE
-	  REFILL DROP ['] INTERPRET
+	  REFILL DROP ['] INTERPRET \ Apparently and execution token
       THEN
-      CATCH DUP 0= IF
+      CATCH DUP 0= IF \ catch needs an xt
 	      DROP STATE @ 0= IF FREE ." OK" THEN CR
       ELSE \ throw occured.
           DUP -2 = IF

@@ -139,7 +139,7 @@ LABEL R0ADDR ENDASM \ Create an assembler label at cfa
 \G Divide signed double number d by single number n1, giving quotient and
 \G remainder. Round always down (floored division),
 \G remainder has same sign as divisor.
-  DUP >R OVER OVER XOR >R
+  DUP >R 2OVER XOR >R
   SM/REM
   OVER R> 0< AND IF SWAP R@ + SWAP 1 - THEN R> DROP ;
 
@@ -558,7 +558,7 @@ VARIABLE CAPS ( --- a-addr)
 
 \ PART 10: File load routines.
 
-VARIABLE  OSSTRING ( --- addr)
+VARIABLE OSSTRING ( --- addr)
 \G Buffer to store file names, command lines, zero terminated for OS calls.
 78 ALLOT-T
 

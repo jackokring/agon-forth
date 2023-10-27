@@ -349,7 +349,7 @@ CODE RP@ ( --- a-addr)
     PUSH BC
     PUSH IX
     POP BC
-    NEXT
+    JP SNEXT
 END-CODE
 
 CODE RP! ( a-addr --- )
@@ -368,7 +368,7 @@ CODE SP@ ( --- a-addr)
     PUSH BC
     LD C, L
     LD B, H
-    NEXT
+    JS SNEXT
 END-CODE
 
 CODE SP! ( a-addr ---)
