@@ -498,6 +498,9 @@ LABEL COLDSTARTADDR ENDASM
 02 ALLOT-T
 \ Set when system is started up.
 
+VARIABLE AT-STARTUP 
+\G Variable to hold code to run at startup.
+
 : FREE ( ---)
 \G Print estimated free space
     SP@ PAD 80 + - U. ."  bytes free" CR ;
@@ -533,9 +536,6 @@ LABEL COLDSTARTADDR ENDASM
   0 UNTIL
 ;
 
-VARIABLE AT-STARTUP
-' QUIT AT-STARTUP ! 
-
 : WARM ( ---)
 \G This word is called when an error is thrown. Clears the stacks, sets
 \G BASE to decimal, closes the files and resets the search order. 
@@ -547,13 +547,15 @@ VARIABLE AT-STARTUP
     FORTH-WORDLIST CONTEXT CELL+ !
     FORTH-WORDLIST CURRENT !
     0 HANDLER !
-    \ QUIT
-    AT-STARTUP @ EXECUTE ;
+    AT-STARTUP @ IF AT-STARTUP @ EXECUTE THEN
+    QUIT ;
 
 : F-STARTUP
-\G This is the first colon definition called after a (cold) startup.    
-    ." Agon *fof, GPL3" CR
-    ." (C) 2023 @>S. Jackson, L.C. Benschop, Brad Rodriguez" CR
+\G This is the first colon definition called after a (cold) startup.
+    AT-STARTUP @ 0= IF    
+        ." Agon *fof, GPL3" CR
+        ." (C) 2023 @>S. Jackson, L.C. Benschop, Brad Rodriguez" CR
+    THEN
     \ Yes, I've done some edits and the repo has an issues tab
     0 SYSVARS 5 0 D+ XC!
     WARM ;
