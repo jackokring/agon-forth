@@ -582,9 +582,13 @@ DEFINITIONS
 	MB?
     $0000 R0 ! $FF00 S0 ! WARM ;
 
+: 2EMIT ( u1 u2 ---)
+\G Emits u2 followed by u1.
+    EMIT EMIT ;
+
 : 2CEMIT ( u ---)
 \G Emit 2 characters in little endian order.
-    SPLIT EMIT EMIT ;
+    SPLIT 2EMIT ;
     
 : EMIT-XY ( x y ---)
 \G Emit a 16 bit coordinate.
@@ -629,11 +633,11 @@ VARIABLE USEBG
     
 : COL ( col ---)
 \G Set text colour.
-    18 EMIT EMIT ;
+    17 2EMIT ;
     
-: GCOL ( mode col ---)
-\G Set graphics draw mode and colour. Add 128 to col for background colour.
-    17 EMIT SWAP EMIT EMIT ;
+: GCOL ( col ---)
+\G Set graphics colour. Add 128 to col for background select.
+    18 EMIT 0 2EMIT ;
     
 : FLIP ( ---)
 \G Flip draw buffer.
@@ -641,7 +645,7 @@ VARIABLE USEBG
     
 : MODE ( mode ---)
 \G Set graphics video mode.
-    22 EMIT EMIT ;    
+    22 2EMIT ;    
 
 : CLG ( ---)
 \G Clear graphics.
@@ -649,11 +653,46 @@ VARIABLE USEBG
     
 : PAL64 ( col pal ---)
 \G Set the colour to the palette index.
-    19 EMIT SWAP EMIT EMIT 0EMIT 0EMIT 0EMIT ;
+    19 EMIT SWAP 2EMIT 0EMIT 0EMIT 0EMIT ;
     
 : PALRGB ( col r g b ---)
 \G Set a colour to an RGB value.
-    19 EMIT 2>R SWAP EMIT 255 EMIT EMIT 2R> SWAP EMIT EMIT ;
+    19 EMIT 2>R SWAP EMIT 255 2EMIT 2R> SWAP 2EMIT ;
+    
+: (AUDIO) ( chan ---)
+\G Sends audio preamble for channel.
+    23EMIT 0EMIT $85 2EMIT ;
+    
+: VOL ( vol chan ---)
+\G Set channel volume.
+    (AUDIO) 2 2EMIT ;
+    
+: ADSR ( a d s r chan ---)
+\G Set an envelope on a channel.
+    (AUDIO) 6 EMIT 1 EMIT 2>R SWAP 2CEMIT 2CEMIT 2R> SWAP 2CEMIT 2CEMIT ;
+
+: FREQ ( freq chan ---)
+\G Set channel frequency.
+    (AUDIO) 3 2EMIT ;
+    
+: FM ( len count chan ---)
+\G Apply a frequency envelope to an audio channel. The len sets the overall
+\G step length. The count is the number of pairs of steps and offset following
+\G by perhaps using VDU and , for storing count many pairs of 16 bit cells.
+    (AUDIO) 7 EMIT 1 EMIT EMIT 7 EMIT 2CEMIT ;
+
+: WAVE ( wave chan ---)
+\G Set channel waveform. Negative values are for samples.
+    (AUDIO) 4 2EMIT ;
+
+: ENABLE ( f chan ---)
+\G Set audio channel enabled.
+    (AUDIO) IF 8 ELSE 9 THEN EMIT ;
+
+: SILENCE ( chan ---)
+\G Stop audio channel.
+    (AUDIO) 10 EMIT ;
+
 
 CAPS ON
 

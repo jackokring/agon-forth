@@ -51,6 +51,9 @@ loop when limit and start are equal.
 (ABORT")   f -- -                                                              
 Runtime part of ABORT" .........."
 
+(AUDIO)   chan ---                                                             
+Sends audio preamble for channel.
+
 (DO)   n1 n2 ---                                                               
 Runtime part of DO. n2 is initial counter, n1 is limit
 
@@ -207,6 +210,9 @@ Discard the top double number on the stack.
 2DUP   d --- d d                                                               
 Duplicate the top cell on the stack, but only if it is nonzero.
 
+2EMIT   u1 u2 ---                                                              
+Emits u2 followed by u1.
+
 2OVER   d1 d2 --- d1 d2 d1                                                     
 Take a copy of the second double number of the stack and push it on the 
 stack.
@@ -325,6 +331,9 @@ u is the absolute value of n.
 ACCEPT   c-addr n1 --- n2                                                      
 Read a line from the terminal to a buffer starting at c-addr with
 length n1. n2 is the number of characters read,
+
+ADSR   a d s r chan ---                                                        
+Set an envelope on a channel.
 
 AGAIN   x ---                                                                  
 Terminate a loop forever BEGIN..AGAIN loop.    
@@ -634,6 +643,9 @@ Print character c on the screen.
 EMIT-XY   x y ---                                                              
 Emit a 16 bit coordinate.
 
+ENABLE   f chan ---                                                            
+Set audio channel enabled.
+
 END-CODE   ---                                                                 
 Terminate a code definition
 
@@ -698,6 +710,11 @@ and 1 if the word is immediate.
 FLIP   ---                                                                     
 Flip draw buffer.
 
+FM   len count chan ---                                                        
+Apply a frequency envelope to an audio channel. The len sets the overall
+step length. The count is the number of pairs of steps and offset following
+by perhaps using VDU and , for storing count many pairs of 16 bit cells.
+
 FM/MOD   d n1 --- nrem nquot                                                   
 Divide signed double number d by single number n1, giving quotient and
 remainder. Round always down (floored division),
@@ -720,8 +737,11 @@ Frees the maximum space if possible. By default 32kB is used. This can be
 increased if fof is loaded low by load fof.bin but is not done by default.
 Warning, this performs a WARM start to reinitialise the stacks if successful.
 
-GCOL   mode col ---                                                            
-Set graphics draw mode and colour. Add 128 to col for background colour.
+FREQ   freq chan ---                                                           
+Set channel frequency.
+
+GCOL   col ---                                                                 
+Set graphics colour. Add 128 to col for background select.
 
 GET-ORDER   --- w1 w2 ... wn n                                                 
 Return all wordlists in the search order, followed by the count.
@@ -1068,6 +1088,9 @@ This variable holds the source i.d. returned by SOURCE-ID.
 SIGN   n ---                                                                   
 Insert a - sign in the numerical conversion buffer if n is negative.
 
+SILENCE   chan ---                                                             
+Stop audio channel.
+
 SKIP   c-addr1 u1 c --- c-addr2 u2                                             
 Find the first character not equal to c in the string c-addr1 u1
 c-addr2 u2 is the remaining part of the string starting with the
@@ -1235,6 +1258,9 @@ VOCABULARY   ---
 Make a definition that will replace the last word in the search order
 by its wordlist.
 
+VOL   vol chan ---                                                             
+Set channel volume.
+
 VWAIT   ---                                                                    
 Wait for system vertical blank as is done in BBC basic.
 
@@ -1244,6 +1270,9 @@ Write only file access mode.
 WARM   ---                                                                     
 This word is called when an error is thrown. Clears the stacks, sets
 BASE to decimal, closes the files and resets the search order. 
+
+WAVE   wave chan ---                                                           
+Set channel waveform. Negative values are for samples.
 
 WHILE   x1 --- x2 x1                                                           
 part of BEGIN WHILE REPEAT construction.
