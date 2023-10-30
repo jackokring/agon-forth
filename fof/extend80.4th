@@ -601,6 +601,10 @@ DEFINITIONS
 : 0EMIT ( ---)
 \G Emit a NUL character.
     0 EMIT ;
+    
+: CURSOR ( f ---)
+\G Ser cursor visibility by flag f.
+    23EMIT 1 EMIT IF 1 ELSE 0 THEN EMIT ;
 
 \ all use fg colour, add 2 to shape for bg colour.
 
@@ -683,7 +687,13 @@ VARIABLE USEBG
 
 : WAVE ( wave chan ---)
 \G Set channel waveform. Negative values are for samples.
-    (AUDIO) 4 2EMIT ;
+    (AUDIO) 4 2EMIT ;    
+    
+: SAMPLE ( ud u --- u')
+\G Emit a sample header and stack a number suitable for WAVE. The 24 bit length
+\G ud is for long files. Then emit the file content of length ud and use
+\G chan WAVE.
+    (AUDIO) INVERT 6 EMIT 0EMIT -ROT SWAP 2CEMIT EMIT ;
 
 : ENABLE ( f chan ---)
 \G Set audio channel enabled.
