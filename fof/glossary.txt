@@ -75,6 +75,9 @@ If the word is not found, return the string addres instead. Flag values:
 (FORGET)   xt ---                                                              
 Forget the word indicated by xt and everything defined after it. 
 
+(GFX)   ---                                                                    
+Emit bitmap preamble.
+
 (LEAVE)   ---                                                                  
 Runtime of LEAVE
 
@@ -395,6 +398,15 @@ Fill the memory region of u bytes starting at c-addr with spaces.
 BLOAD   addr len "ccc" ---                                                     
 Load a file in memory at address addr, filename is the next word parsed.    
 
+BMP   u ---                                                                    
+Select bitmap number u.
+
+BMP-DATA   w h ---                                                             
+Load index colour bitmap data of width w and height h following as w*h bytes.
+
+BMP-XY   x y ---                                                               
+draw the bitmap selected by BMP at graphics point x, y.
+
 BOUNDS   addr1 n --- addr2 addr1                                               
 Convert address and length to two bounds addresses for DO LOOP
 
@@ -531,6 +543,9 @@ Buffer containing the current file name
 CURRENT   --- addr                                                             
 This variable holds the address of the word list to which new definitions
 are added.
+
+CURSOR   f ---                                                                 
+Ser cursor visibility by flag f.
 
 D+   d1 d2 --- d3                                                              
 Add the double numbers d1 and d2.
@@ -1065,6 +1080,11 @@ Variable that holds the bottom address of the stack.
 
 S>D   n --- d                                                                  
 Convert single number to double number.
+
+SAMPLE   ud u --- u'                                                           
+Emit a sample header and stack a number suitable for WAVE. The 24 bit length
+ud is for long files. Then emit the file content of length ud and use
+chan WAVE.
 
 SAVE-SYSTEM   "ccc"  ---                                                       
 Save the current FORTH system to the specifed file.    

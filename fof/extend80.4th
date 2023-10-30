@@ -713,7 +713,7 @@ VARIABLE USEBG
 
 : BMP-DATA ( w h ---)
 \G Load index colour bitmap data of width w and height h following as w*h bytes.
-    (GFX) 1 EMIT SWAP 2EMIT ;
+    (GFX) 1 EMIT EMIT-XY ;
 
 : BMP-XY ( x y ---)
 \G draw the bitmap selected by BMP at graphics point x, y.
