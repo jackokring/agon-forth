@@ -590,21 +590,70 @@ DEFINITIONS
 \G Emit a 16 bit coordinate.
     SWAP 2CEMIT 2CEMIT ;
 
+: 23EMIT ( ---)
+\G Emit special code 23.
+    23 EMIT ;
+
+: 0EMIT ( ---)
+\G Emit a NUL character.
+    0 EMIT ;
+
+\ all use fg colour, add 2 to shape for bg colour.
+
+VARIABLE USEBG
+\G Set ON or OFF for drawing mode uses background. Default OFF.
+
+: BGCOL? ( n --- n')
+\G Applies 2+ if USEBG is ON.
+    USEBG IF 2+ THEN ;
+
 : PLOT ( x y ---)
 \G Plot a point at x, y.
-    23 EMIT $40 EMIT EMIT-XY ; 
+    23EMIT $41 BGCOL? EMIT EMIT-XY ; 
 
 : LINE ( x y ---)
 \G Draw a line to x, y.
-    23 EMIT 0 EMIT EMIT-XY ;
+    23EMIT 1 BGCOL? EMIT EMIT-XY ;
 
 : TRIANGLE ( x y ---)
 \G Complete a triangle using x, y.
-    23 EMIT $50 EMIT EMIT-XY ;
+    23EMIT $51 BGCOL? EMIT EMIT-XY ;
 
 : CIRCLE ( x y ---)
 \G Circle to x, y.
-    23 EMIT $98 EMIT EMIT-XY ;
+    23EMIT $99 BGCOL? EMIT EMIT-XY ;
+    
+: BOX ( x y ---)
+\G Box to x, y.
+    23EMIT $61 BGCOL? EMIT EMIT-XY ;
+    
+: COL ( col ---)
+\G Set text colour.
+    18 EMIT EMIT ;
+    
+: GCOL ( mode col ---)
+\G Set graphics draw mode and colour. Add 128 to col for background colour.
+    17 EMIT SWAP EMIT EMIT ;
+    
+: FLIP ( ---)
+\G Flip draw buffer.
+    23EMIT 0 EMIT $C3 EMIT ;
+    
+: MODE ( mode ---)
+\G Set graphics video mode.
+    22 EMIT EMIT ;    
+
+: CLG ( ---)
+\G Clear graphics.
+    16 EMIT ;
+    
+: PAL64 ( col pal ---)
+\G Set the colour to the palette index.
+    19 EMIT SWAP EMIT EMIT 0EMIT 0EMIT 0EMIT ;
+    
+: PALRGB ( col r g b ---)
+\G Set a colour to an RGB value.
+    19 EMIT 2>R SWAP EMIT 255 EMIT EMIT 2R> SWAP EMIT EMIT ;
 
 CAPS ON
 

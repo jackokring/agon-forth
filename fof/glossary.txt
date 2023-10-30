@@ -161,6 +161,9 @@ f is true if and only if x is 0.
 0>   n --- f                                                                   
 f is true if and only if n is greater than 0.
 
+0EMIT   ---                                                                    
+Emit a NUL character.
+
 1+   w1 --- w2                                                                 
 Add 1 to the top of the stack.
 
@@ -182,11 +185,17 @@ Subtract 2 from the top of the stack.
 2/   n1 --- n2                                                                 
 Divide signed number n1 by 2.
 
+23EMIT   ---                                                                   
+Emit special code 23.
+
 2>R   d --- R: d                                                               
 Place a double on the return stack.
 
 2@   a-addr --- d                                                              
 Fetch double number d at a-addr. 
+
+2CEMIT   u ---                                                                 
+Emit 2 characters in little endian order.
 
 2CONSTANT   d ---                                                              
 Create a new definition that has the following runtime behavior.
@@ -359,6 +368,9 @@ Variable that contains the numerical conversion base.
 BEGIN   --- x                                                                  
 Start a BEGIN UNTIL or BEGIN WHILE REPEAT loop.
 
+BGCOL?   n --- n'                                                              
+Applies 2+ if USEBG is ON.
+
 BIN   mode1 --- mode2                                                          
 Modify the R/O W/O or R/W mode so that it applies to binary files. 
 
@@ -376,6 +388,9 @@ Load a file in memory at address addr, filename is the next word parsed.
 
 BOUNDS   addr1 n --- addr2 addr1                                               
 Convert address and length to two bounds addresses for DO LOOP
+
+BOX   x y ---                                                                  
+Box to x, y.
 
 BRANCH   ---                                                                   
 High-level unconditional jump, loads IP from next cell in instruction
@@ -440,6 +455,12 @@ c-addr2 is the previous character address before c-addr1.
 CHARS   n1 --- n2                                                              
 n2 is the number of address units occupied by n1 characters.
 
+CIRCLE   x y ---                                                               
+Circle to x, y.
+
+CLG   ---                                                                      
+Clear graphics.
+
 CLOSE-FILE   fid --- ior                                                       
 Close the open file described by fid.
 
@@ -453,6 +474,9 @@ descending order.
 
 CODE   "ccc" ---                                                               
 Defining word to create a code definition.
+
+COL   col ---                                                                  
+Set text colour.
 
 COMPARE   addr1 u1 addr2 u2 --- diff                                           
 Compare two strings. diff is negative if addr1 u1 is smaller, 0 if it
@@ -607,6 +631,9 @@ part of IF ELSE THEN construction.
 EMIT   c ---                                                                   
 Print character c on the screen.     
 
+EMIT-XY   x y ---                                                              
+Emit a 16 bit coordinate.
+
 END-CODE   ---                                                                 
 Terminate a code definition
 
@@ -668,6 +695,9 @@ counted string at c-addr. If not found return the name address and 0.
 If found return the execution token xt and -1 if the word is non-immediate
 and 1 if the word is immediate.
 
+FLIP   ---                                                                     
+Flip draw buffer.
+
 FM/MOD   d n1 --- nrem nquot                                                   
 Divide signed double number d by single number n1, giving quotient and
 remainder. Round always down (floored division),
@@ -689,6 +719,9 @@ FREEMAX   ---
 Frees the maximum space if possible. By default 32kB is used. This can be
 increased if fof is loaded low by load fof.bin but is not done by default.
 Warning, this performs a WARM start to reinitialise the stacks if successful.
+
+GCOL   mode col ---                                                            
+Set graphics draw mode and colour. Add 128 to col for background colour.
 
 GET-ORDER   --- w1 w2 ... wn n                                                 
 Return all wordlists in the search order, followed by the count.
@@ -777,6 +810,9 @@ calling the word that then called LATER.
 LEAVE   ---                                                                    
 Runtime: leave the matching DO LOOP immediately.
 
+LINE   x y ---                                                                 
+Draw a line to x, y.
+
 LIT   --- n                                                                    
 Run-time part of LITERAL. Pushes next cell in instruction thread to stack.
 
@@ -823,6 +859,9 @@ n3 is the minimum of n1 and n2.
 
 MOD   n1 n2 --- n3                                                             
 n3 is the remainder of n1 and n2.
+
+MODE   mode ---                                                                
+Set graphics video mode.
 
 MOVE   c-addr1 c-addr2 u ---                                                   
 Copy a block of u bytes starting at c-addr1 to c-addr2. Order is such
@@ -902,6 +941,12 @@ the numerical conversion buffer.
 PAGE   ---                                                                     
 Clear the screen and move print position to top left.
 
+PAL64   col pal ---                                                            
+Set the colour to the palette index.
+
+PALRGB   col r g b ---                                                         
+Set a colour to an RGB value.
+
 PARSE   c --- addr len                                                         
 Find a character sequence in the current source that is delimited by
 character c. Adjust >IN to 1 past the end delimiter character.
@@ -913,6 +958,9 @@ is OVER etc.
 PLACE   addr len c-addr ---                                                    
 Place the string starting at addr with length len at c-addr as
 a counted string.
+
+PLOT   x y ---                                                                 
+Plot a point at x, y.
 
 POCKET   --- a-addr                                                            
 Buffer for S" strings that are interpreted.
@@ -1052,6 +1100,9 @@ Output u spaces to the terminal.
 SPAN   --- addr                                                                
 This variable holds the number of characters read by EXPECT.
 
+SPLIT   u --- b1 b2                                                            
+Split cell into bytes little end is b2.
+
 SRC   --- addr                                                                 
 This variable holds the address of the current input source.
 
@@ -1090,6 +1141,9 @@ is the standard terminal input buffer.
 
 TO   n "ccc" ---                                                               
 Change the value of the following VALUE type word.    
+
+TRIANGLE   x y ---                                                             
+Complete a triangle using x, y.
 
 TRUE   --- -1                                                                  
 Constant -1, indicates TRUE
@@ -1156,6 +1210,9 @@ each time UNTIL is encountered and the loop iterates until it is nonzero.
 
 UPPERCASE?   ---                                                               
 Convert the parsed word to uppercase is CAPS is true.
+
+USEBG                                                                          
+Set ON or OFF for drawing mode uses background. Default OFF.
 
 VALUE   n ---                                                                  
 Create a variable that returns its value when executed, prefix it with TO
