@@ -732,6 +732,15 @@ CODE RSHIFT ( x1 u --- x2)
     NEXT
 END-CODE
 
+CODE SPLIT ( u --- b1 b2)
+\G Split cell into bytes little end is b2.
+    SUB HL, HL
+    LD L, B
+    LD B, $0
+    PUSH HL
+    JP SNEXT
+END-CODE
+
 CODE DROP ( x --- )
 \G Discard the top item on the stack.        
     POP BC

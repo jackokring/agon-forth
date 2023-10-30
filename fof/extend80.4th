@@ -563,7 +563,8 @@ DEFINITIONS
 	
 : VDUDG ( "c" "name" ---)
 \G Makes a VDU header for the character following it.
-    POSTPONE [CHAR] VDU SWAP 23 C, C, ; \ Make UDG header. 
+    POSTPONE [CHAR] DUP 32 < OVER 128 = OR IF DROP -21 THROW THEN \ Error. 
+    VDU SWAP 23 C, C, ; \ Make UDG header. 
 	
 : END-VDU ( mark ---)
 \G End a VDU definition which then has a name to use.
@@ -580,6 +581,30 @@ DEFINITIONS
 \G Warning, this performs a WARM start to reinitialise the stacks if successful.
 	MB?
     $0000 R0 ! $FF00 S0 ! WARM ;
+
+: 2CEMIT ( u ---)
+\G Emit 2 characters in little endian order.
+    SPLIT EMIT EMIT ;
+    
+: EMIT-XY ( x y ---)
+\G Emit a 16 bit coordinate.
+    SWAP 2CEMIT 2CEMIT ;
+
+: PLOT ( x y ---)
+\G Plot a point at x, y.
+    23 EMIT $40 EMIT EMIT-XY ; 
+
+: LINE ( x y ---)
+\G Draw a line to x, y.
+    23 EMIT 0 EMIT EMIT-XY ;
+
+: TRIANGLE ( x y ---)
+\G Complete a triangle using x, y.
+    23 EMIT $50 EMIT EMIT-XY ;
+
+: CIRCLE ( x y ---)
+\G Circle to x, y.
+    23 EMIT $98 EMIT EMIT-XY ;
 
 CAPS ON
 
