@@ -556,14 +556,18 @@ DEFINITIONS
     
 \ PART 8: Agon related words. (@jackokring)
 
-: VDU ( ---) 
+: VDU ( "name" --- mark) 
 \G Loop over all placed C, and , values placed before the following END-VDU.
-    CREATE >MARK DOES> DUP @ SWAP 1+ DO
+    !CSP CREATE >MARK DOES> DUP @ SWAP 1+ DO
 	I @ EMIT LOOP ;
 	
-: END-VDU ( ---)
+: VDUDG ( "c" "name" ---)
+\G Makes a VDU header for the character following it.
+    POSTPONE [CHAR] VDU SWAP 23 C, C, ; \ Make UDG header. 
+	
+: END-VDU ( mark ---)
 \G End a VDU definition which then has a name to use.
-    >RESOLVE ; 
+    >RESOLVE ?CSP ; 
     
 : VWAIT ( ---)
 \G Wait for system vertical blank as is done in BBC basic.

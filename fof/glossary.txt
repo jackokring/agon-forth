@@ -230,6 +230,12 @@ f is true if and only if n1 is less than or equal to n2.
 <>   x1 x2 --- f                                                               
 f is true if and only if x1 is not equal to x2.
 
+<MARK   --- addr                                                               
+Mark a backward reference.
+
+<RESOLVE   addr ---                                                            
+Resolve a backward reference.
+
 =   x1 x2 --- f                                                                
 f is true if and only if x1 is equal to x2.
 
@@ -250,6 +256,9 @@ Convert execution token to parameter field address.
 This variable holds an index in the current input source where the next word
 will be parsed.
 
+>MARK   --- addr                                                               
+Mark a forward reference.
+
 >NAME   addr1 --- addr2                                                        
 Convert execution token addr1 (address of code) to address of name.
 
@@ -261,6 +270,12 @@ that is no digit.
 
 >R   x ---                                                                     
 Push x on the return stack. 
+
+>RESOLVE   addr ---                                                            
+Resolve a forward reference.
+
+>X   x ---                                                                     
+Push x on the ADL extended stack.
 
 ?BRANCH   f ---                                                                
 High-level conditonal jump, jumps only if TOS=0    
@@ -329,7 +344,10 @@ Start assembling.
 ASSEMBLER   ---                                                                
 Vocabulary containing the ASSEMBLER words.
 
-AT-XY   x y --                                                                 
+AT-STARTUP                                                                     
+Variable to hold code to run at startup.
+
+AT-XY   x y ---                                                                
 Set print position to column x and row y.    
 
 BACKSPACE   ---                                                                
@@ -502,6 +520,9 @@ Double shift left.
 D=   d1 d1  --- f                                                              
 f is true if and only if d1 and d2 are equal.
 
+D>X   d ---                                                                    
+Push d on the ADL extended stack as 24 bit.
+
 DABS   d --- ud                                                                
 ud is the absolute value of d.
 
@@ -570,6 +591,9 @@ Show a hex/ascii dump of the memory block of len bytes at addr
 DUP   x --- x x                                                                
 Duplicate the top cell on the stack.    
 
+DX>   --- d                                                                    
+Pop the top 24 bit of the ADL extended stack and place it on the stack.
+
 ED   ---                                                                       
 Invoke the editor on the current file (selected with OPEN)   
 
@@ -586,7 +610,7 @@ Print character c on the screen.
 END-CODE   ---                                                                 
 Terminate a code definition
 
-END-VDU   ---                                                                  
+END-VDU   mark ---                                                             
 End a VDU definition which then has a name to use.
 
 ENDCASE   variable# ---                                                        
@@ -624,7 +648,7 @@ Read a line from the terminal to a buffer at c-addr with length u.
 Store the length of the line in SPAN.
 
 F-STARTUP                                                                      
-This is the first colon definition called after a (cold) startup.    
+This is the first colon definition called after a (cold) startup.
 
 FALSE   --- 0                                                                  
 Constant 0, indicates FALSE
@@ -1141,8 +1165,11 @@ VARIABLE   "ccc" ---
 Create a variable where 1 cell can be stored. When executed it
 returns the address.
 
-VDU   ---                                                                      
+VDU   "name" --- mark                                                          
 Loop over all placed C, and , values placed before the following END-VDU.
+
+VDUDG   "c" "name" ---                                                         
+Makes a VDU header for the character following it.
 
 VOC-LINK                                                                       
 Variable that links all vocabularies together, so we can link.
@@ -1186,11 +1213,17 @@ WRITE-LINE   c-addr u fid --- ior
 Write the string at addr c-addr with length u to the file described by
 fid. Append the end of line character to it.
 
+X>   --- x                                                                     
+Pop the top of the ADL extended stack and place it on the stack.
+
 XC!   c d-addr ---                                                             
 Store a byte value into an extended address.    
 
 XC@   d-addr --- c                                                             
 Read a byte value from an extended address.
+
+XEXECUTE   d ---                                                               
+Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
 
 XOR   x1 x2 ---x3                                                              
 Bitwise exclusive or of the top two cells on the stack.
