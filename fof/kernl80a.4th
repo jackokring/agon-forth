@@ -343,15 +343,24 @@ CODE >X ( x ---)
     JP SNEXT
 END-CODE
 
-CODE D>X ( d ---)
-\G Push d on the ADL extended stack as 24 bit.
+LABEL DXX
     LD B, C
     CALL BCX
     INC .LIL SP
+    POP HL
     POP BC
+    PUSH HL
     CALL BCX
+    POP HL
     POP BC
-    JP SNEXT
+    PUSH HL
+    RET
+ENDASM
+
+CODE D>X ( d ---)
+\G Push d on the ADL extended stack as 24 bit.
+	CALL DXX
+	JP SNEXT    
 END-CODE
 
 CODE X> ( --- x)

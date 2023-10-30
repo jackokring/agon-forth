@@ -401,36 +401,20 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
 \G Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
 \G Return the return code as in the A register.
     LD A, C
+    PUSH .LIL DE
+    PUSH .LIL IX \ Save
     \ Format BC
     POP BC
-    PUSH .LIL BC
-    DEC .LIL SP
-    DEC .LIL SP
-    POP .LIL BC \ MSB ok
-    POP BC      \ All ok
-    INC .LIL SP
-    INC .LIL SP \ Discard
+    CALL DXX
     \ Format DE
-    PUSH .LIL DE \ Save IP
-    POP DE
-    PUSH .LIL DE
-    DEC .LIL SP
-    DEC .LIL SP
-    POP .LIL DE
-    POP DE
-    INC .LIL SP
-    INC .LIL SP
+    POP BC
+    CALL DXX
     \ Format HL
-    POP HL
-    PUSH .LIL HL
-    DEC .LIL SP
-    DEC .LIL SP
+    POP BC
+    CALL DXX
     POP .LIL HL
-    POP HL
-    INC .LIL SP
-    INC .LIL SP
-    \ Relocation assumption, or indirect non-ADL usage from system call
-    PUSH .LIL IX    \ Save RP
+    POP .LIL DE
+    POP .LIL BC
     RST $8
     POP .LIL IX     \ Restore RP
     POP .LIL DE     \ Restore IP
