@@ -703,6 +703,23 @@ VARIABLE USEBG
 \G Stop audio channel.
     (AUDIO) 10 EMIT ;
 
+: (GFX) ( ---)
+\G Emit bitmap preamble.
+    23EMIT 27 EMIT ;
+    
+: BMP ( u ---)
+\G Select bitmap number u.
+    (GFX) 0EMIT EMIT ;
+
+: BMP-DATA ( w h ---)
+\G Load index colour bitmap data of width w and height h following as w*h bytes.
+    (GFX) 1 EMIT SWAP 2EMIT ;
+
+: BMP-XY ( x y ---)
+\G draw the bitmap selected by BMP at graphics point x, y.
+    (GFX) 3 EMIT EMIT-XY ;
+    
+\ This completes the simple audio-visual interface.
 
 CAPS ON
 
