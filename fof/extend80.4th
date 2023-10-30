@@ -512,7 +512,7 @@ DEFINITIONS
     
 : UM*/ ( ud u1 u2 --- udpq)
 \G Use u1/u2 as a ratio to multiply ud by giving udpq.
-    TUM* TUM/ ; 
+    0 SWAP TUM* TUM/ DROP ; 
 
 : T+ ( t1 t2 --- tsum)
 \G Triple add.
@@ -558,12 +558,12 @@ DEFINITIONS
 
 : VDU ( ---) 
 \G Loop over all placed C, and , values placed before the following END-VDU.
-    CREATE MARKER> DOES> DUP @ SWAP 1+ DO
+    CREATE >MARK DOES> DUP @ SWAP 1+ DO
 	I @ EMIT LOOP ;
 	
 : END-VDU ( ---)
 \G End a VDU definition which then has a name to use.
-    <RESOLVE ; 
+    >RESOLVE ; 
     
 : VWAIT ( ---)
 \G Wait for system vertical blank as is done in BBC basic.

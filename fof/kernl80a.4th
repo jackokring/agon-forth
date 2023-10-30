@@ -316,6 +316,88 @@ CODE UNLOOP ( --- )
     JP SNEXTHL
 END-CODE
 
+LABEL BCX
+    PUSH .LIL BC
+    DEC .LIL SP
+    POP .LIL BC
+    INC .LIL SP
+    PUSH .LIL BC
+    INC .LIL SP
+    RET
+ENDASM
+
+LABEL XBC
+   DEC .LIL SP
+   POP .LIL BC
+   DEC .LIL SP
+   PUSH .LIL BC
+   INC .LIL SP
+   POP .LIL BC
+   RET
+ENDASM
+
+CODE >X ( x ---)
+\G Push x on the ADL extended stack.
+    CALL BCX
+    POP BC
+    JP SNEXT
+END-CODE
+
+CODE D>X ( d ---)
+\G Push d on the ADL extended stack as 24 bit.
+    LD B, C
+    CALL BCX
+    INC .LIL SP
+    POP BC
+    CALL BCX
+    POP BC
+    JP SNEXT
+END-CODE
+
+CODE X> ( --- x)
+\G Pop the top of the ADL extended stack and place it on the stack.
+    PUSH BC
+    CALL XBC
+    JP SNEXT
+END-CODE
+
+CODE DX> ( --- d)
+\G Pop the top 24 bit of the ADL extended stack and place it on the stack.
+    PUSH BC
+    CALL XBC
+    PUSH BC
+    DEC .LIL SP
+    CALL XBC
+    LD C, B
+    LD B, $0
+    JP SNEXT
+END-CODE
+
+LABEL XJPHL
+    POP BC
+    CALL BCX
+    LD B, 2
+    CALL BCX
+    INC .LIL SP \ Fake a 24 bit ADL call
+    JP .LIS (HL) \ 24 bit spring board indirect HL.
+ENDASM
+
+CODE XEXECUTE ( d ---)
+\G Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
+    CALL BCX
+    POP BC
+    CALL BCX
+    POP .LIL HL
+    INC .LIL SP
+    PUSH IX
+    PUSH DE \ Clean machine.
+    CALL XJPHL \ Enter 24 bit code.
+    POP DE \ Return point froma RET .LIL
+    POP IX
+    POP BC \ Restor top of stack
+    JP SNEXT
+END-CODE
+
 CODE R@ ( --- x)
 \G x is a copy of the top of the return stack.
     PUSH BC

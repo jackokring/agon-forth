@@ -124,6 +124,22 @@ THEN
 : C, ( n --- )
 \G Append character c to the dictionary at HERE.
   HERE C! 1 ALLOT ;
+  
+: <MARK ( --- addr )
+\G Mark a backward reference.
+  HERE ;
+
+: <RESOLVE ( addr ---)
+\G Resolve a backward reference.
+  , ;
+
+: >MARK ( --- addr )
+\G Mark a forward reference.
+  HERE 0 , ;
+
+: >RESOLVE ( addr --- )
+\G Resolve a forward reference.
+  HERE SWAP ! ;
 
 : ALIGN ( --- )
 \G Add as many bytes to the dictionary as needed to align dictionary pointer.
@@ -391,7 +407,8 @@ VARIABLE POCKET ( --- a-addr )
 
 : ?STACK ( ---)
 \G Check for stack over/underflow and abort with an error if needed.
-  DEPTH DUP 0< -4 ?THROW 255 > -3 ?THROW HERE 128 + $FE00 U> -5 ?THROW ;
+  DEPTH DUP 0< -4 ?THROW 255 > -3 ?THROW HERE 128 +
+  S0 @ 510 - U> -5 ?THROW ;
 
 : INTERPRET ( ---)
 \G Interpret words from the current source until the input source is exhausted.
@@ -503,7 +520,7 @@ VARIABLE AT-STARTUP
 
 : FREE ( ---)
 \G Print estimated free space
-    SP@ PAD 80 + - U. ."  bytes free" CR ;
+    SP@ HERE 128 + - U. ."  bytes free" CR ;
 
 : QUIT ( --- )
 \G This word resets the return stack, resets the compiler state, the include

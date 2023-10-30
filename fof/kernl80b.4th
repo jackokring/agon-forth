@@ -199,7 +199,7 @@ END-CODE
 \G Clear the screen and move print position to top left.
     12 EMIT  ;
 
-: AT-XY ( x y -- )
+: AT-XY ( x y ---)
 \G Set print position to column x and row y.    
     31 EMIT SWAP EMIT EMIT ;
 
