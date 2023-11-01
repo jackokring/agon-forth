@@ -393,6 +393,8 @@ ENDASM
 
 CODE XEXECUTE ( d ---)
 \G Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
+\G The registers are as expected with BC as the top of stack, DE as the IP
+\G HL a a scratch register (all 16 bit), and IX as RP.
     CALL BCX
     POP BC
     CALL BCX

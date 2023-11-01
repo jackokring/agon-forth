@@ -618,7 +618,9 @@ and then executes whatever comes after DOES>
 
 DOSCALL   dHL dDE dBC func --- res                                             
 Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
-Return the return code as in the A register.
+Return the return code as in the A register. This indirectly uses RST 8
+not in ADL mode, calling RST .LIL 8 so leaving extra cells on the stack
+and BC is not the top of stack. This allows for vectoring the mos call.
 
 DP   --- a-addr                                                                
 Variable that contains the dictionary pointer. New space is allocated
@@ -834,6 +836,10 @@ Wait until a key is pressed and return the ASCII code
 
 KEY?   --- f                                                                   
 Check if a key is pressed. Return a flag    
+
+KEY@   --- n                                                                   
+After KEY? returns true, return the ASCII code of the key. This allows key
+input without blocking. The modifiers are returned in the high byte.
 
 LAST   --- addr                                                                
 This variable holds a pointer to the last definition created.
@@ -1330,6 +1336,8 @@ Read a byte value from an extended address.
 
 XEXECUTE   d ---                                                               
 Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
+The registers are as expected with BC as the top of stack, DE as the IP
+HL a a scratch register (all 16 bit), and IX as RP.
 
 XOR   x1 x2 ---x3                                                              
 Bitwise exclusive or of the top two cells on the stack.

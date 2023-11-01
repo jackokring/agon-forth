@@ -324,6 +324,19 @@ LABEL LAST-KEY
 01 ALLOT-T
 ENDASM
 
+\ 0. CTRL
+\ 1. SHIFT
+\ 2. ALT LEFT
+\ 3. ALT RIGHT
+\ 4. CAPS LOCK
+\ 5. NUM LOCK
+\ 6. SCROLL LOCK
+\ 7. GUI
+
+LABEL LAST-MOD
+01 ALLOT-T
+ENDASM
+
 CODE KEY ( --- c)
 \G Wait until a key is pressed and return the ASCII code
     PUSH IX
@@ -375,6 +388,8 @@ CODE KEY? ( --- f)
     LD .LIL A, $18 (IX+)  \ Check key down.
     SUB $01  \ Carry only if A=0
     U>= IF
+    LD .LIL A, $6 (IX+) \ Check modifier.
+	LD LAST-MOD (), A
 	LD .LIL A, $5 (IX+) \ Check non-zero ASCII code.
 	LD LAST-KEY (), A
 	SUB $01
@@ -388,6 +403,16 @@ CODE KEY? ( --- f)
     NEXT	
 END-CODE
 
+CODE KEY@ ( --- n)
+\G After KEY? returns true, return the ASCII code of the key. This allows key
+\G input without blocking. The modifiers are returned in the high byte.
+    PUSH BC
+    LD B, LAST-MOD () \ Modifiers in high byte
+    LD C, LAST-KEY ()
+    LD LAST-KEY (), $0 \ Clear key
+    NEXT
+END-CODE
+
 CODE MB@ ( --- u)
 \G Current value of MB register.
     LD A, MB
@@ -399,7 +424,9 @@ END-CODE
 
 CODE DOSCALL ( dHL dDE dBC func --- res)
 \G Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
-\G Return the return code as in the A register.
+\G Return the return code as in the A register. This indirectly uses RST 8
+\G not in ADL mode, calling RST .LIL 8 so leaving extra cells on the stack
+\G and BC is not the top of stack. This allows for vectoring the mos call.
     LD A, C
     PUSH .LIL DE
     PUSH .LIL IX \ Save
