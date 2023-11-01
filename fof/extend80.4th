@@ -734,7 +734,23 @@ VARIABLE USEBG
 : JOYF ( --- x)
 \G Get the joystick fire value.
     $A2 P@ 0 OVER 128 AND NOT IF 2+ THEN
-    SWAP 32 AND NOT IF 1+ THEN ;   
+    SWAP 32 AND NOT IF 1+ THEN ;
+
+\ 0. CTRL
+\ 1. SHIFT
+\ 2. ALT LEFT
+\ 3. ALT RIGHT
+\ 4. CAPS LOCK
+\ 5. NUM LOCK
+\ 6. SCROLL LOCK
+\ 7. GUI
+    
+: KEY-SHIFT ( u --- u')
+\G Apply the modifiers for key shifting and control for general ASCII input
+\G from KEY@. Use the gui key to shift into the higher latin.
+    SPLIT OVER 1 AND IF 64 - DUP 32 U> IF 32 - THEN THEN \ Control keys
+    SWAP 128 AND IF 128 + THEN \ Simple extended characters
+    255 AND ; 
 
 CAPS ON
 

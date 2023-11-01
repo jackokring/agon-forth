@@ -831,8 +831,21 @@ Set the word to be executed by the deferred word.
 J   ---n                                                                       
 Get loop variable of next outer loop.    
 
+JOYF   --- x                                                                   
+Get the joystick fire value.
+
+JOYX   --- x                                                                   
+Get the joystick x value.
+
+JOYY   --- y                                                                   
+Get the joystick y value.
+
 KEY   --- c                                                                    
 Wait until a key is pressed and return the ASCII code
+
+KEY-SHIFT   u --- u'                                                           
+Apply the modifiers for key shifting and control for general ASCII input
+from KEY@. Use the gui key to shift into the higher latin.
 
 KEY?   --- f                                                                   
 Check if a key is pressed. Return a flag    
