@@ -721,6 +721,21 @@ VARIABLE USEBG
     
 \ This completes the simple audio-visual interface.
 
+: JOYX ( --- x)
+\G Get the joystick x value.
+    $9E P@ 0 OVER 128 AND NOT IF 1+ THEN
+    SWAP 32 AND NOT IF 1- THEN ;
+    
+: JOYY ( --- y)
+\G Get the joystick y value.
+    $9E P@ 0 OVER 2 AND NOT IF 1+ THEN
+    SWAP 8 AND NOT IF 1- THEN ;
+
+: JOYF ( --- x)
+\G Get the joystick fire value.
+    $A2 P@ 0 OVER 128 AND NOT IF 2+ THEN
+    SWAP 32 AND NOT IF 1+ THEN ;   
+
 CAPS ON
 
 \ S" asmz80.4th" INCLUDED
