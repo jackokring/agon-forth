@@ -947,6 +947,9 @@ Negate top number on the stack.
 NIP   x1 x2 --- x2                                                             
 Discard the second item on the stack.
 
+NO-ASM                                                                         
+Forget the memory used by the assembler.
+
 NOOP   ---                                                                     
 No operation    
 

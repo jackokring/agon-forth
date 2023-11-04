@@ -769,9 +769,11 @@ VARIABLE USEBG
 
 CAPS ON
 
-S" asmz80.4th" INCLUDED
-     
 HERE FENCE !
+MARKER NO-ASM
+\G Forget the memory used by the assembler.
+
+S" asmz80.4th" INCLUDED
 
 DELETE fof.bin
 CR .( Saving system as fof.bin ) CR
