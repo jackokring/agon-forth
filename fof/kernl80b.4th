@@ -436,17 +436,17 @@ LABEL ZEROM
 ENDASM
 
 LABEL CALLADL
-    EXX
+    EX AF, AF' \ Save return code
     LD A, M
     LD B, A
     CALL BCX
     INC .LIL SP
     POP BC
     CALL BCX \ 24 bit address stored
-    LD C, 3 \ Mark as ADL mode return
+    LD B, 3 \ Mark as ADL mode return
     CALL BCX
     INC .LIL SP
-    EXX
+    EX AF, AF'
     RET .LIL \ Continue as ADL
 ENDASM
 

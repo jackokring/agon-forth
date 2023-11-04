@@ -448,9 +448,10 @@ CDC4 2  JMPINST CALL
     NEXTHL
 ;
 
-: .LIL 005B C_ ;
-: .SIS 0040 C_ ;
-: .LIS 0049 C_ ;
+: .LIL 005B C_ ; \ Long mode
+: .SIS 0040 C_ ; \ Short mode
+: .LIS 0049 C_ ; \ Long actions/Short data
+: .SIL 0052 C_ ; \ Short actions/Long data
 
 : ENDASM \ End assembly.
   A; PREVIOUS ;
