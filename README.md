@@ -20,3 +20,5 @@ memory to 32kB and was the main reason to pick a 16-bit forth for this applicati
 The intent is a forth that builds in a similar manor, has reduce memory requirements, is actively developed unlike `forth16`
 and will run almost all `forth24` source code.
 
+The crazy hoops to go through to allow a 16-bit app to use 24-bit `OSCALL` so that it can load things in any memory.
+
