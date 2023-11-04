@@ -486,7 +486,7 @@ CODE DOSCALL ( dHL dDE dBC func --- res)
     POP AF
     LD M, A \ Fix M again
     EX AF, AF'
-    CALL .SIS CALLZ80
+    CALL .LIS CALLZ80
     POP .LIL IX     \ Restore RP
     POP .LIL DE     \ Restore IP
     LD C, A
