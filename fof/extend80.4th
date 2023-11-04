@@ -387,8 +387,9 @@ DEFINITIONS
 \G filename is the next word parsed.       
    2>R (FILE) 2R> 2 DOSCALL -37 ?THROW ;
 
-: BLOAD ( addr len "ccc" ---)
-\G Load a file in memory at address addr, filename is the next word parsed.    
+: BLOAD ( daddr dlen "ccc" ---)
+\G Load a file in memory at address addr, filename is the next word parsed.
+\G The dlen parameter is maximum allowed size, but file can be shorter.    
    2>R (FILE) 2R> 1 DOSCALL -38 ?THROW ;
 
 : DELETE ( "ccc"  --)
@@ -751,6 +752,20 @@ VARIABLE USEBG
     SPLIT OVER 1 AND IF 64 - DUP 32 U> IF 32 - THEN THEN \ Control keys
     SWAP 128 AND IF 128 + THEN \ Simple extended characters
     255 AND ; 
+    
+: VLOAD ( daddr dlen "ccc-file" "ccc-name" ---)
+\G Load the file named "file" at address daddr, and make a dictionary entry
+\G to play the files sequence as a VDU sequence.
+    2DUP 2>R 2SWAP 2DUP 2>R 2SWAP BLOAD CREATE 2R> SWAP , , 2R> SWAP , ,
+    DOES> 0 4 DO DUP I + @ TUCK LOOP DROP \ Have daddr dlen
+    BEGIN
+        2DUP 0. D= NOT
+    WHILE
+        2>R 2DUP XC@ EMIT
+        1 0 D+ \ Next byte
+        2R> 1 0 D- \ One less to do
+    REPEAT
+    2DROP 2DROP ;   
 
 CAPS ON
 

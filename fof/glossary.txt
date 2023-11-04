@@ -401,8 +401,9 @@ Constant 32, the blank character
 BLANK   c-addr u ----                                                          
 Fill the memory region of u bytes starting at c-addr with spaces.    
 
-BLOAD   addr len "ccc" ---                                                     
-Load a file in memory at address addr, filename is the next word parsed.    
+BLOAD   daddr dlen "ccc" ---                                                   
+Load a file in memory at address addr, filename is the next word parsed.
+The dlen parameter is maximum allowed size, but file can be shorter.    
 
 BMP   u ---                                                                    
 Select bitmap number u.
@@ -1295,6 +1296,10 @@ Loop over all placed C, and , values placed before the following END-VDU.
 
 VDUDG   "c" "name" ---                                                         
 Makes a VDU header for the character following it.
+
+VLOAD   daddr dlen "ccc-file" "ccc-name" ---                                   
+Load the file named "file" at address daddr, and make a dictionary entry
+to play the files sequence as a VDU sequence.
 
 VOC-LINK                                                                       
 Variable that links all vocabularies together, so we can link.
