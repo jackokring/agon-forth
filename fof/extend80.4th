@@ -426,7 +426,7 @@ DEFINITIONS
 : SAVE-SYSTEM ( "ccc"  --- )
 \G Save the current FORTH system to the specifed file.    
     0 CURFILENAME C! \ Do not want stray current file here.
-    0 HERE BSAVE ;
+    0 MB@ HERE 0 BSAVE ;
 
 : TURNKEY ( xt "ccc" --- )
 \G Save the current FORTH system is a way it automatically starts xt
