@@ -25,25 +25,27 @@ ASSEMBLE HEX
 
 \ PART 0: Boot vectors.
 ORIGIN ORG
- JP $45 A; \ reset vector
+ JP $45 A; \ reset vector (load run address code)
  5 ALLOT-T
  \ reserve jump proxy vectors to 24 bit code in mos
- RST .LIL 8 RET A; \ RST 8 handler
+ RST .LIL 8 RET A; \ RST 8 handler (MOS Command)
+ \ DOSCALL does not use this as some 24 bit change
  5 ALLOT-T
- RST .LIL 010 RET A; \ RST 16 handler
+ RST .LIL 010 RET A; \ RST 10 handler (EMIT)
  5 ALLOT-T
- RST .LIL 018 RET A;
+ RST .LIL 018 RET A; \ RST 18 handler (.")
  5 ALLOT-T
- RST .LIL 020 RET A;
+ RST .LIL 020 RET A; \ RST 20 handler
  5 ALLOT-T
- RST .LIL 028 RET A;
+ RST .LIL 028 RET A; \ RST 28 handler
  5 ALLOT-T
- RST .LIL 030 RET A;
+ RST .LIL 030 RET A; \ RST 30 handler
  5 ALLOT-T
- \ the last jump vector is not large enough to do a direct proxy
- JR $0 A; \ RST @ 38 turn absolute to relative restart
+ A; C3 C,  TRANSIENT COLD ASSEMBLER \ RST 38 handler (COLD)
+ 5 ALLOT-T
+ \ MOS header v0? 16-bit code. @$40
  4D C, 4F C, 53 C, 0 C, 0 C, \ Agon MOS header at 64
- \ removed bytes
+ \ $45 Start code
  \ Here we jump to at start (is at $45).
  \ N.B. rentry will eventually consume the SPL stack
  PUSH .LIL IY
@@ -56,7 +58,7 @@ ORIGIN ORG
  EX (SP), HL
  PUSH .LIL HL
  EX (SP), HL
- A; C3 C,  TRANSIENT COLD ASSEMBLER \ Jump to COLD entry point.
+ RST $38 \ Cold handler
 ENDASM
 
 DECIMAL
@@ -383,36 +385,47 @@ CODE DX> ( --- d)
 END-CODE
 
 LABEL XJPHL
+    POP .LIL HL \ Call address
     POP BC
     CALL BCX
-    LD B, 2
+    LD B, 2 \ Mark as z80 mode return
     CALL BCX
-    INC .LIL SP \ Fake a 24 bit ADL call
+    INC .LIL SP
+    POP BC \ Top of stack
     JP .LIS (HL) \ 24 bit spring board indirect HL.
 ENDASM
 
 CODE XEXECUTE ( d ---)
 \G Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
-\G The registers are as expected with BC as the top of stack, DE as the IP
-\G HL a a scratch register (all 16 bit), and IX as RP.
-    CALL BCX
-    POP BC
-    CALL BCX
-    POP .LIL HL
-    INC .LIL SP
-    PUSH IX
-    PUSH DE \ Clean machine.
+\G The registers are as expected BC is the top of stack as is usual.
+\G DE as the IP, HL is a scratch register (all 16 bit) and IX as RP.
+    CALL DXX
+    PUSH BC
     CALL XJPHL \ Enter 24 bit code.
-    POP DE \ Return point froma RET .LIL
-    POP IX
-    POP BC \ Restor top of stack
     JP SNEXT
+END-CODE
+
+CODE 0 ( --- 0)
+\G Stack a literal zero.
+    PUSH BC
+    LD B, $0
+    LD C, B
+    NEXT
+END-CODE
+
+CODE 0. ( --- 0 0)
+\G Stack a double zero.
+    PUSH BC
+    LD B, $0
+    LD C, B
+    PUSH BC
+    NEXT
 END-CODE
 
 CODE R@ ( --- x)
 \G x is a copy of the top of the return stack.
     PUSH BC
-    LD C, 0 (IX+)
+    LD C, $0 (IX+)
     LD B, 1 (IX+)
     NEXT
 END-CODE
@@ -420,9 +433,9 @@ END-CODE
 CODE >R ( x ---)
 \G Push x on the return stack. 
     DEC IX
-    LD 0 (IX+), B
+    LD $0 (IX+), B
     DEC IX
-    LD 0 (IX+), C
+    LD $0 (IX+), C
     POP BC
     NEXT
 END-CODE
@@ -430,9 +443,9 @@ END-CODE
 CODE R> ( --- x)
 \G Pop the top of the return stack and place it on the stack.
     PUSH BC
-    LD C, 0 (IX+)
+    LD C, $0 (IX+)
     INC IX
-    LD B, 0 (IX+)
+    LD B, $0 (IX+)
     INC IX
     NEXT
 END-CODE
@@ -456,7 +469,7 @@ END-CODE
 CODE SP@ ( --- a-addr)
 \G Return the address of the stack pointer (before SP@ was executed).
 \G Note: TOS is in a register, hence stack pointer points to next cell.
-    LD HL, 0
+    LD HL, $0
     ADD HL, SP
     PUSH BC
     LD C, L
@@ -496,13 +509,13 @@ CODE UM* ( u1 u2 --- ud)
     ADD HL, BC \ Have mid and carry
     POP BC     \ Have high 
     LD A, B
-    ADC 0      \ Add carry to high high
+    ADC $0      \ Add carry to high high
     LD B, A
     LD A, C
     ADD H
     LD C, A
     LD A, B
-    ADC 0      \ Add carry to high high
+    ADC $0      \ Add carry to high high
     LD B, A    \ BC high complete almost
     POP DE     \ Have low
     LD A, L
@@ -575,7 +588,7 @@ END-CODE
 
 CODE NEGATE ( n1 --- -n1)
 \G Negate top number on the stack.    
-    LD HL, 0
+    LD HL, $0
     AND A
     SBC HL, BC
     LD C, L
@@ -892,7 +905,7 @@ CODE C@ ( c-addr --- c)
 \G Fetch character c at c-addr.
     LD A, (BC)
     LD C, A
-    LD B, 0
+    LD B, $0
     NEXT
 END-CODE
 
@@ -978,7 +991,7 @@ END-CODE
 CODE P@ ( p-addr --- c)
 \G Read a byte from an I/O port
     IN C, (C)
-    LD B, 0
+    LD B, $0
     JP SNEXT
 END-CODE
 
@@ -997,10 +1010,10 @@ CODE SYSVARS ( --- d-addr)
     LD A, $8
     RST $8
     PUSH .LIL IX         \ Push address onto SPL
-    LD .LIL HL, 2 A; 0 C, \ extra 0 byte to extend immediate value for LIL
+    LD .LIL HL, 2 A; $0 C, \ extra 0 byte to extend immediate value for LIL
     ADD .LIL HL, SP
     LD .LIL C, (HL) \ Pick most significant byte of psuhed value
-    LD B, 0
+    LD B, $0
     POP .LIL HL  \ Pull the value into HL
     POP IX
     PUSH HL \ Put LSB address onto SPS
@@ -1012,13 +1025,13 @@ CODE XC@ ( d-addr --- c)
     POP HL
     PUSH IX
     PUSH .LIL HL
-    LD .LIL IX, 0 A; 0 C,
+    LD .LIL IX, $0 A; $0 C,
     ADD .LIL IX, SP
     LD .LIL 2 (IX+), C  \ Add MSB to value on stack
     POP .LIL HL  \ Extended address now in UHL
     POP IX
     LD .LIL C, (HL)
-    LD B, 0
+    LD B, $0
     JP SNEXT
 END-CODE
 
@@ -1027,7 +1040,7 @@ CODE XC! ( c d-addr ---)
     POP HL
     PUSH IX
     PUSH .LIL HL
-    LD .LIL IX, 0 A; 0 C,
+    LD .LIL IX, $0 A; $0 C,
     ADD .LIL IX, SP
     LD .LIL 2 (IX+), C  \ Add MSB to value on stack
     POP .LIL HL  \ Extended address now in UHL
@@ -1073,7 +1086,7 @@ CODE < ( n1 n2 --- f)
     POP HL
     XOR A
     SBC HL, BC \ Subtract n1-n2
-    LD BC, 0  \ False result to TOS
+    LD BC, $0  \ False result to TOS
     JP PE, LESS_OVF
     JP M, YES \ No overflow, less if negative
     NEXT
@@ -1095,7 +1108,7 @@ CODE = ( x1 x2 --- f)
     POP HL
     AND A
     SBC HL, BC
-    LD BC, 0
+    LD BC, $0
     JR Z, YES
     NEXT
 END-CODE

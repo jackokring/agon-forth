@@ -6,7 +6,6 @@ CROSS-COMPILE
 
 \ PART 4: Constants and variables
 
-00 CONSTANT 0
 01 CONSTANT 1
 02 CONSTANT 2
 -1 CONSTANT -1
@@ -210,9 +209,19 @@ END-CODE
 \G first character indicates the length of the string.
    DUP 1 + SWAP C@ ;
 
-: TYPE ( c-addr1 u --- )
+CODE TYPE ( c-addr1 u --- )
 \G Output the string starting at c-addr and length u to the terminal.
-  DUP IF 0 DO DUP I + C@ EMIT LOOP DROP ELSE DROP DROP THEN ;
+  \ DUP IF 0 DO DUP I + C@ EMIT LOOP DROP ELSE DROP DROP THEN ;
+  LD A, B
+  OR C
+  0= IF
+    JP SNEXT
+  THEN
+  POP HL
+  RST $18
+  POP BC \ Get top of stack ready
+  JP SNEXT
+END-CODE
 
 : (.") ( --- )
 \G Runtime part of ." .........."
@@ -422,27 +431,62 @@ CODE MB@ ( --- u)
     JP SNEXT
 END-CODE
 
+LABEL ZEROM
+    JP .LIL $08 A; $0 \ 24 bit spring board indirect HL.
+ENDASM
+
+LABEL CALLADL
+    EXX
+    LD A, M
+    LD B, A
+    CALL BCX
+    INC .LIL SP
+    POP BC
+    CALL BCX \ 24 bit address stored
+    LD C, 3 \ Mark as ADL mode return
+    CALL BCX
+    INC .LIL SP
+    EXX
+    RET .LIL \ Continue as ADL
+ENDASM
+
+LABEL CALLZ80
+    CALL XBC \ Get crap from mode change
+    RET \ Continue as z80
+ENDASM
+
 CODE DOSCALL ( dHL dDE dBC func --- res)
 \G Call the MOS API via RST 8 with the desired parameters in HL, DE and BC.
 \G Return the return code as in the A register. This indirectly uses RST 8
 \G not in ADL mode, calling RST .LIL 8 so leaving extra cells on the stack
 \G and BC is not the top of stack. This allows for vectoring the mos call.
-    LD A, C
-    PUSH .LIL DE
+    LD A, C \ Load command byte
+    PUSH .LIL DE 
     PUSH .LIL IX \ Save
     \ Format BC
     POP BC
     CALL DXX
     \ Format DE
-    POP BC
     CALL DXX
     \ Format HL
-    POP BC
     CALL DXX
+    PUSH BC \ Save top of stack
     POP .LIL HL
     POP .LIL DE
     POP .LIL BC
-    RST $8
+    CALL CALLADL   \ Doesn't vector as in ADL
+    EX AF, AF'
+    LD A, M
+    PUSH AF
+    LD A, $0
+    LD M, A \ Now in good state
+    EX AF, AF'
+    RST $8 \ Call master MOS
+    EX AF, AF'
+    POP AF
+    LD M, A \ Fix M again
+    EX AF, AF'
+    CALL .SIS CALLZ80
     POP .LIL IX     \ Restore RP
     POP .LIL DE     \ Restore IP
     LD C, A

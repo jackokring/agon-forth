@@ -146,8 +146,14 @@ n3 is n1 divided by n2.
 /MOD   n1 n2 --- nrem nquot                                                    
 Divide signed number n1 by n2, giving quotient and remainder.
 
+0   --- 0                                                                      
+Stack a literal zero.
+
 0                                                                              
 Used in [IF] [ELSE] [THEN] for conditional compilation.    
+
+0.   --- 0 0                                                                   
+Stack a double zero.
 
 04TUCK   n --- 0 0 0 0 n                                                       
 Makes 2 double literal zeros tucked on the stack.
@@ -1349,8 +1355,8 @@ Read a byte value from an extended address.
 
 XEXECUTE   d ---                                                               
 Execute a call into 24 bit code. This must return using RET .LIL to exit ADL.
-The registers are as expected with BC as the top of stack, DE as the IP
-HL a a scratch register (all 16 bit), and IX as RP.
+The registers are as expected BC is the top of stack as is usual.
+DE as the IP, HL is a scratch register (all 16 bit) and IX as RP.
 
 XOR   x1 x2 ---x3                                                              
 Bitwise exclusive or of the top two cells on the stack.
