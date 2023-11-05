@@ -44,6 +44,10 @@ load kernel80.bin
 run &40000 extend80.4th
 ```
 
+If you place output `fof.bin` in the `mos` directory the `*fof` becomes
+a possible os command. The FOURTH word `BYE` exits `fof`. Being 16-bit code
+it will locate at $040000 and $0B0000 without absolute addressing issues.
+
 ### Prerequisites
 
 You need Agon MOS of at least version 1.03. 

@@ -44,7 +44,9 @@ ORIGIN ORG
  A; C3 C,  TRANSIENT COLD ASSEMBLER \ RST 38 handler (COLD)
  5 ALLOT-T
  \ MOS header v0? 16-bit code. @$40
- 4D C, 4F C, 53 C, 0 C, 0 C, \ Agon MOS header at 64
+ \ Ignored v1? byte after "MOS" perhaps issue #111 agon-mos helps explain
+ \ Vote?
+ 4D C, 4F C, 53 C, 1 C, 0 C, \ Agon MOS header at 64
  \ $45 Start code
  \ Here we jump to at start (is at $45).
  \ N.B. rentry will eventually consume the SPL stack
