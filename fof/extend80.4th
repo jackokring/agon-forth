@@ -746,13 +746,6 @@ VARIABLE USEBG
 \ 6. SCROLL LOCK
 \ 7. GUI
     
-: KEY-SHIFT ( u --- u')
-\G Apply the modifiers for key shifting and control for general ASCII input
-\G from KEY@. Use the gui key to shift into the higher latin.
-    SPLIT OVER 1 AND IF 64 - DUP 32 U> IF 32 - THEN THEN \ Control keys
-    SWAP 128 AND IF 128 + THEN \ Simple extended characters
-    255 AND ; 
-    
 : VLOAD ( daddr dlen "ccc-file" "ccc-name" ---)
 \G Load the file named "file" at address daddr, and make a dictionary entry
 \G to play the files sequence as a VDU sequence.

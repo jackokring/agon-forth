@@ -850,16 +850,16 @@ Get the joystick y value.
 KEY   --- c                                                                    
 Wait until a key is pressed and return the ASCII code
 
-KEY-SHIFT   u --- u'                                                           
-Apply the modifiers for key shifting and control for general ASCII input
-from KEY@. Use the gui key to shift into the higher latin.
-
 KEY?   --- f                                                                   
 Check if a key is pressed. Return a flag    
 
 KEY@   --- n                                                                   
 After KEY? returns true, return the ASCII code of the key. This allows key
 input without blocking. The modifiers are returned in the high byte.
+
+KEYCODE?   n --- f                                                             
+Return true if keycode of a key is held down. This allows key input without
+blocking.
 
 LAST   --- addr                                                                
 This variable holds a pointer to the last definition created.

@@ -409,7 +409,7 @@ CODE KEY? ( --- f)
     ADC A, $00
     LD C, A
     LD B, A
-    NEXT	
+    JP SNEXT	
 END-CODE
 
 CODE KEY@ ( --- n)
@@ -419,7 +419,42 @@ CODE KEY@ ( --- n)
     LD B, LAST-MOD () \ Modifiers in high byte
     LD C, LAST-KEY ()
     LD LAST-KEY (), $0 \ Clear key
-    NEXT
+    JP SNEXT
+END-CODE
+
+CODE KEYCODE? ( n --- f)
+\G Return true if keycode of a key is held down. This allows key input without
+\G blocking.
+	PUSH IX
+	LD A, $1E
+    RST $8 \ Get key matrix bit array
+    LD A, C
+    AND $7F
+    PUSH AF
+    SRL A
+    SRL A
+    SRL A
+    PUSH .LIL IX
+    POP .LIL HL \ Got byte base
+    LD B, 0
+    LD C, A
+    ADD HL, BC \ Got byte
+    LD C, (HL)
+    POP AF
+    AND $07
+    0<> IF
+    LD B, A \ Bit counter
+    LD A, $01
+    BEGIN
+    SLA A
+    B--0= UNTIL
+    ELSE
+    LD A, $01
+    THEN
+    AND C \ Se bit
+    LD C, A \ B=0 and flag
+	POP IX
+	JP SNEXT
 END-CODE
 
 CODE MB@ ( --- u)
