@@ -438,8 +438,8 @@ CODE KEYCODE? ( n --- f)
     POP .LIL HL \ Got byte base
     LD B, 0
     LD C, A
-    ADD HL, BC \ Got byte
-    LD C, (HL)
+    ADD HL, BC \ Got byte -- unlikely segment boundary on table
+    LD .LIL C, (HL) \ Yes, a far pointer but likely within a 64 kB > $0B0000
     POP AF
     AND $07
     0<> IF
